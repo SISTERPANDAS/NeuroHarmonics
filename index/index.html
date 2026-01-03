@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuro Harmonics</title>
+    <meta name="description" content="Experience AI-powered brainwave monitoring and harmonic therapy with NeuroHarmonics — enhancing focus, mood, and mental clarity through sound and science." />
+
+    <meta name="author" content="NeuroHarmonics" />
+
+    <meta name="keywords" content="NeuroHarmonics, AI neuroscience, brainwave monitoring, harmonic sound therapy, focus enhancement, relaxation, mental wellness, EEG mood detection" />
+
+    <meta property="og:title" content="NeuroHarmonics | AI-Powered Brainwave Harmony" />
+    <meta property="og:description" content="Experience AI-powered brainwave monitoring and harmonic therapy with NeuroHarmonics — enhancing focus, mood, and mental clarity through sound and science." />
+    <meta property="og:image" content=" -to be uploaded- " />
+    <meta property="og:url" content=" _to be updated_ " />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="NeuroHarmonics" />
+
+    <script type="module" crossorigin src="index.js"></script> 
+    <link rel="stylesheet" crossorigin href="index.css"> 
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <!-- Background -->
+  <div class="background"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-section">
+      <img src="logo.png" alt="NeuroHarmonics" class="logo" />
+      <div class="title-text">
+        <h1>NeuroHarmonics</h1>
+        <p class="tagline">Balancing Minds Through Neural Harmony</p>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#login">Log In</a></li>
+      </ul>
+    </nav>
+  </header>
+
+ <!-- ABOUT -->
+<section id="about" class="section">
+  <h2>About Us</h2>
+  <p>
+    <span class="highlight">NeuroHarmonics</span> is an innovative platform that bridges the gap between <span class="highlight">neuroscience</span> and <span class="highlight">technology</span> to enhance emotional well-being. 
+    By analyzing <span class="highlight">EEG brainwave data</span>, we accurately detect an individual’s mood state and provide 
+    <span class="highlight">personalized recommendations</span> designed to restore balance and improve mental performance. 
+    Our intelligent system suggests tailored exercises, relaxation techniques, and sound experiences that align with each user’s 
+    emotional and cognitive patterns. Through the seamless fusion of <span class="highlight">AI-driven analytics</span> and 
+    <span class="highlight">neurofeedback</span>, NeuroHarmonics empowers individuals to understand, align, and elevate their mental state 
+    with precision and ease.  
+    <br><br>
+    At NeuroHarmonics, we envision a future where technology doesn’t just respond to users — it <span class="highlight">resonates</span> with them.  
+    <br><br>
+    <b>NeuroHarmonics — where the science of the brain meets the art of balance.</b>
+  </p>
+</section>
+
+<section id="services" class="section">
+  <h2>Our Services</h2>
+
+  <div class="subsection-container">
+
+    <!-- Subsection 1 -->
+    <div class="subsection">
+      <h3>📡 Real-Time EEG Reading</h3>
+      <p>Monitor and visualize your brainwave activity in real time. Our intelligent system detects changes in attention, relaxation, and mood, providing instant insights into your mental state.</p>
+    </div>
+
+    <!-- Subsection 2 -->
+    <div class="subsection">
+      <h3>📤 Upload EEG Data</h3>
+      <p>Already have EEG recordings? Upload your data securely to get a personalized analysis. NeuroHarmonics interprets your readings and recommends mood-enhancing activities and exercises.</p>
+    </div>
+
+  </div>
+</section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section">
+    <h2>Contact Us</h2>
+    <p>We’d love to hear from you! Reach out for collaborations or questions.</p>
+    <div class="contact-email">
+      <p>Email: <a href="mailto:team@neuroharmonics.com">team@neuroharmonics.com</a></p>
+    </div>
+    <div class="contact-phone">
+      <p>Phone: <a href="tel:+917733905856">7733905856</a></p>
+    </div>
+  </section>
+
+  <!-- LOGIN -->
+  <section id="login" class="section">
+    <h2>Log In</h2>
+    <form>
+      <input type="email" placeholder="Enter Email" required />
+      <input type="password" placeholder="Enter Password" required />
+      <button class='login-button' type="submit">Login</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 NeuroHarmonics | Designed by Team CSD078</p>
+  </footer>
+
+<!--
+<style>
+  body {
+    overflow: hidden;
+    background: #000;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+  }
+
+  #neural-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+</style>
+
+<canvas id="neural-bg"></canvas>
+
+<script>
+  const canvas = document.getElementById("neural-bg");
+  const ctx = canvas.getContext("2d");
+  let width, height;
+  const nodes = [];
+  const numNodes = 80; // number of points
+  const maxDistance = 150;
+  const cursor = { x: null, y: null };
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener("resize", resize);
+  resize();
+
+  // Create network nodes
+  for (let i = 0; i < numNodes; i++) {
+    nodes.push({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.7,
+      vy: (Math.random() - 0.5) * 0.7
+    });
+  }
+
+  // Track cursor
+  document.addEventListener("mousemove", (e) => {
+    cursor.x = e.clientX;
+    cursor.y = e.clientY;
+  });
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    // Draw electric/EEG-style gradient background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, "rgba(0, 255, 204, 0.05)");
+    gradient.addColorStop(1, "rgba(255, 102, 204, 0.05)");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+
+    // Move nodes
+    for (let node of nodes) {
+      node.x += node.vx;
+      node.y += node.vy;
+
+      if (node.x < 0 || node.x > width) node.vx *= -1;
+      if (node.y < 0 || node.y > height) node.vy *= -1;
+    }
+
+    // Connect nodes like neural wires
+    for (let i = 0; i < numNodes; i++) {
+      for (let j = i + 1; j < numNodes; j++) {
+        const dx = nodes[i].x - nodes[j].x;
+        const dy = nodes[i].y - nodes[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < maxDistance) {
+          const alpha = 1 - dist / maxDistance;
+          ctx.strokeStyle = `rgba(0, 255, 204, ${alpha * 0.4})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(nodes[j].x, nodes[j].y);
+          ctx.stroke();
+        }
+      }
+
+      // Cursor interaction – connect to nearby nodes
+      if (cursor.x && cursor.y) {
+        const dx = nodes[i].x - cursor.x;
+        const dy = nodes[i].y - cursor.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < maxDistance * 1.2) {
+          ctx.strokeStyle = `rgba(255, 102, 204, ${1 - dist / (maxDistance * 1.2)})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(nodes[i].x, nodes[i].y);
+          ctx.lineTo(cursor.x, cursor.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw nodes (neural points)
+    for (let node of nodes) {
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 2.2, 0, Math.PI * 2);
+      ctx.fillStyle = "#00ffcc";
+      ctx.fill();
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = "#00ffcc";
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+</script>
+-->
+
+</body>
+</html>

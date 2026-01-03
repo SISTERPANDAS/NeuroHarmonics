@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin:0;
+  color: #e3fcef;
+  background: rgba(10, 10, 10, 0.693);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Animated Background */
+.background {
+  background: url('background.gif') center/cover no-repeat fixed;
+  opacity: 0.2;
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+
+
+
+header {
+  display: flex;
+  flex-direction: column; /* stack items vertically */
+  align-items: center;    /* center horizontally */
+  background: black;
+  padding: 20px 0;
+}
+
+/* Keep logo and tagline inline */
+.logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Make nav come on next line */
+nav {
+  margin-top: 10px; /* add space below logo section */
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+  padding: 0;
+  margin: 0;
+}
+
+
+
+
+
+
+/* HEADER */
+header {
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(10, 10, 10, 0.85);
+  padding: 15px 60px;
+  border-bottom: 1px solid #0ff;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid #ff00ff;
+  margin-right: 15px;
+}
+
+.title-text h1 {
+  font-size: 2.rem;
+  color: #00ffcc;
+  text-shadow: 0 0 5px #00ffcc, 0 0 2px #00ffcc;
+}
+
+.tagline {
+  font-size: 0.9rem;
+  color: #ff77ff;
+  text-shadow: 0 0 8px #ff00ff;
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+nav a {
+  color: #e3fcef;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: 0.3s;
+  text-shadow: 0 0 5px #00ffcc;
+}
+
+nav a:hover {
+  color: #ff00ff;
+  text-shadow: 0 0 15px #ff00ff;
+}
+
+  h1 {
+    text-align: center;
+    font-size: 3rem;
+    color: #00ffcc;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    text-shadow: 0 0 12px rgba(0,255,204,0.5);
+  }
+
+  p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #cccccc;
+    text-align: justify;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .highlight {
+    color: #ff66cc;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255,102,204,0.3);
+  }
+
+/* SECTIONS */
+.section {
+  padding: 100px 15%;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.6);
+  margin: 50px auto;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+  transition: transform 0.4s ease;
+}
+
+.section:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 25px #00ffcc, 0 0 50px #ff00ff;
+}
+
+.section h2 {
+  color: #00ffcc;
+  font-size: 2rem;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px #00ffcc;
+}
+
+.section p,
+.section ul {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #f7e1ff;
+}
+
+.section ul {
+  list-style: none;
+}
+
+.section ul li {
+  margin: 12px 0;
+  text-shadow: 0 0 5px #ff00ff;
+}
+
+/* LOGIN FORM */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+form input {
+  width: 280px;
+  padding: 12px;
+  border: 1px solid #00ffcc;
+  border-radius: 10px;
+  background: rgba(15, 15, 15)}
+
+/* Subsection Container */
+  .subsection-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; /* makes it responsive */
+    gap: 40px;
+  }
+
+  /* Each Box */
+  .subsection {
+    flex: 1;
+    min-width: 300px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 30px;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 20px rgba(0,255,204,0.1);
+  }
+
+  /* Shared Hover Condition */
+  .subsection:hover {
+    background: rgba(0, 255, 204, 0.177);
+    box-shadow: 0 0 25px rgba(0,255,204,0.5);
+    transform: translateY(-10px);
+  }
+
+  .subsection h3 {
+    color: #ff66cc;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    text-shadow: 0 0 6px rgba(255,102,204,0.3);
+  }
+
+  .subsection p {
+    color: #bbbbbb;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .section {
+    padding: 80px 12%;
+    background: linear-gradient(145deg, #0a0a0a 70%, #0d1b1e);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 3rem;
+    color: #00ffcc;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 40px;
+    text-shadow: 0 0 12px rgba(0,255,204,0.5);
+  }
+
+  p {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #cccccc;
+    text-align: justify;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .highlight {
+    color: #ff66cc;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(255,102,204,0.3);
+  }
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+  .login-button {
+  background: transparent;                /* see-through button */
+  border: 2px solid #00ffcc;              /* neon cyan border */
+  color: #00ffcc;                         /* text color */
+  padding: 10px 25px;
+  border-radius: 30px;                    /* rounded corners */
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;              /* smooth hover animation */
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+}
+
+.login-button:hover {
+  background: #00ffcc;                    /* fills in on hover */
+  color: #000;                            /* contrast text */
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+  transform: translateY(-2px);            /* slight lift effect */
+}
+
+.contact-phone a {
+  color: #00ffcc;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: 0.3s;
+}
+
+.contact-phone a:hover {
+  color: #ff66cc;
+  text-shadow: 0 0 10px rgba(255, 102, 204, 0.6);
+}
+
+.contact-email a {
+  color: #00ffcc;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: 0.3s;
+}
+
+.contact-email a:hover {
+  color: #ff66cc;
+  text-shadow: 0 0 10px rgba(255, 102, 204, 0.6);
+}
