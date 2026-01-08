@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NeuroHarmonics - Emotion Analysis</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+
+<body class="p-6 bg-gray-50">
+
+<header class="flex justify-between items-center mb-10 px-4">
+  <div class="flex items-center gap-2 text-blue-600 font-bold text-xl">
+    <i class="fas fa-brain"></i> NeuroHarmonics
+  </div>
+
+  <div class="flex items-center gap-6">
+    <div class="profile">
+    <i class="far fa-user text-gray-600 cursor-pointer"></i>
+    </div>
+    <button class="logout-btn" onclick="logout()">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto">
+  <h1 class="text-3xl font-bold text-gray-800 mb-2">Emotion Analysis Dashboard</h1>
+  <p class="text-gray-500 mb-8">
+    Upload data, analyze emotions, and receive personalized wellness recommendations
+  </p>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+
+    <!-- INPUT -->
+    <section class="card p-6">
+      <h2 class="section-title">Input Stage</h2>
+
+      <div class="input-item">
+        <i class="fas fa-file-upload text-blue-500"></i>
+        <div>
+          <p class="font-semibold text-sm">Upload EEG File</p>
+          <p class="text-xs text-gray-400">.edf, .csv, .txt</p>
+        </div>
+      </div>
+
+      <div class="input-item">
+        <i class="fas fa-rss text-purple-500"></i>
+        <div>
+          <p class="font-semibold text-sm">Connect Live EEG Device</p>
+          <p class="text-xs text-gray-400">Real-time stream</p>
+        </div>
+      </div>
+
+      <div class="input-item">
+        <i class="fas fa-camera text-teal-500"></i>
+        <div>
+          <p class="font-semibold text-sm">Upload Facial Image</p>
+          <p class="text-xs text-gray-400">JPEG / PNG</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESSING -->
+    <section class="card p-6">
+      <h2 class="section-title">Processing Stage</h2>
+
+      <button onclick="analyzeData()" class="gradient-btn">
+        <i class="fas fa-atom"></i> Analyze Emotion
+      </button>
+    </section>
+
+    <!-- RESULT -->
+    <section class="card p-6 text-center">
+      <h2 class="section-title">Detection Result</h2>
+      <div id="result-placeholder" class="py-16 text-gray-400">
+        Upload data to view results
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+  function analyzeData() {
+    const box = document.getElementById("result-placeholder");
+    box.innerHTML = "Analyzing...";
+    setTimeout(() => {
+      box.innerHTML = "<b class='text-green-500'>Calm (94%)</b>";
+    }, 2000);
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "../index/index.html";
+  }
+</script>
+
+</body>
+</html>
