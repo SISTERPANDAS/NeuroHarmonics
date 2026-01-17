@@ -1,11 +1,17 @@
-/* Page */
+/* =========================
+   Page
+========================= */
 .page {
   padding: 24px;
-  background: #f9fafb;
-  font-family: Arial, sans-serif;
+  background: radial-gradient(circle at top, #1b103f, #0c081a);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #e9d5ff;
+  min-height: 100vh;
 }
 
-/* Header */
+/* =========================
+   Header
+========================= */
 .header {
   display: flex;
   justify-content: space-between;
@@ -17,9 +23,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #2563eb;
   font-size: 20px;
   font-weight: bold;
+  color: #c4b5fd;
 }
 
 .top-actions {
@@ -29,29 +35,37 @@
 }
 
 .profile {
-  padding: 6px;
+  padding: 8px;
   border-radius: 50%;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .profile:hover {
-  background: #e5e7eb;
+  background: rgba(168, 85, 247, 0.2);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
 }
 
+/* Logout Button */
 .btn-logout {
-  background: #ef4444;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
   color: white;
   border: none;
-  padding: 8px 14px;
-  border-radius: 8px;
+  padding: 8px 16px;
+  border-radius: 10px;
   cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s ease;
 }
 
 .btn-logout:hover {
-  background: #dc2626;
+  transform: translateY(-2px);
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
 }
 
-/* Main */
+/* =========================
+   Main
+========================= */
 .main {
   max-width: 1100px;
   margin: auto;
@@ -60,27 +74,37 @@
 .title {
   font-size: 28px;
   font-weight: bold;
-  color: #1f2937;
+  color: #e9d5ff;
 }
 
 .subtitle {
-  color: #6b7280;
+  color: #c4b5fd;
   margin-bottom: 32px;
 }
 
-/* Grid */
+/* =========================
+   Grid
+========================= */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
 }
 
-/* Card */
+/* =========================
+   Card
+========================= */
 .card {
-  background: white;
+  background: #140c2f;
   padding: 24px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.25);
+  transition: 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.55);
 }
 
 .center {
@@ -91,73 +115,64 @@
   font-size: 18px;
   font-weight: 600;
   margin-bottom: 16px;
-  color: #374151;
+  color: #ddd6fe;
 }
 
-/* Items */
+/* =========================
+   Items
+========================= */
 .item {
   display: flex;
   gap: 12px;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 .item:hover {
-  background: #f3f4f6;
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(168, 85, 247, 0.4);
 }
 
 .item-title {
   font-size: 14px;
   font-weight: 600;
+  color: #e9d5ff;
 }
 
 .item-sub {
   font-size: 12px;
-  color: #9ca3af;
+  color: #b8b2ff;
 }
 
-/* Button */
+/* =========================
+   Buttons
+========================= */
 .btn-main {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 14px;
+  border-radius: 14px;
   border: none;
   font-weight: bold;
   color: white;
   cursor: pointer;
-  background: linear-gradient(135deg, #6366f1, #3b82f6);
+  background: linear-gradient(135deg, #57309c, #a855f7);
+  transition: 0.3s ease;
 }
 
 .btn-main:hover {
-  opacity: 0.9;
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 18px rgba(168, 85, 247, 0.7);
 }
 
-/* Result */
+/* =========================
+   Result
+========================= */
 .result {
   padding: 60px 0;
-  color: #9ca3af;
+  color: #a78bfa;
 }
 
-/* Icon colors */
-.blue { color: #3b82f6; }
-.purple { color: #8b5cf6; }
-.teal { color: #14b8a6; }
-
-/* File input */
-.file-input {
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-.file-name {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #16a34a;
-}
-
-/* Ensure item content aligns properly */
-.item-content {
-  display: flex;
-  flex-direction: column;
-}
+/* =========================
+   Icon Col

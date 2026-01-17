@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="index.css" />
+  <title>Wellness Login</title>
+</head>
+<body>
+
+<a href="index.html" class="back-btn">← Back</a>
+
+<!-- Main Layout -->
+<main class="split-container">
+
+  <!-- LEFT: Login Section -->
+  <section class="left-section reveal">
+    <h1>Start Your Wellness Journey</h1>
+    <p class="subtitle">
+      Sign in to access your personalized emotional wellness dashboard
+    </p>
+
+    <div class="auth-card">
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" onclick="showLogin()">Login</button>
+        <button class="tab" onclick="showRegister()">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm" class="form active">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="Enter your email" required />
+
+        <label>Password</label>
+        <input id="password"  type="password" placeholder="Enter your password" required />
+
+        <button type="button" class="primary-btn" onclick="login()">
+          Sign In →
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" class="form hidden">
+        <label>Full Name</label>
+        <input type="text" placeholder="Enter your full name" required />
+
+        <label>Email</label>
+        <input type="email" placeholder="Enter your email" required />
+
+        <label>Password</label>
+        <input type="password" placeholder="Create a password" required />
+
+        <button type="button" class="primary-btn" onclick="register()">
+          Create Account →
+        </button>
+      </form>
+
+      <div class="divider">OR</div>
+
+      <button class="viewer-btn">Continue as Viewer</button>
+
+      <div class="divider"></div>
+
+      <!-- ADMIN LOGIN -->
+      <button class="admin-btn" onclick="window.location.href='admin.html'">
+        Login as Admin
+      </button>
+
+    </div>
+  </section>
+
+  <!-- RIGHT: Video Section -->
+  <section class="right-section">
+    <video autoplay muted loop>
+      <source src="wellness.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    <div class="video-overlay">
+      <h2>Understand • Analyze • Heal</h2>
+      <p>AI-powered emotional wellness platform</p>
+    </div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

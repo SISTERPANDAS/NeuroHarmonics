@@ -1,0 +1,75 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f3e8ff;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+aside {
+    width: 220px;
+    background: linear-gradient(180deg,#6a0dad,#3b0764);
+    color: white;
+    padding: 20px;
+}
+
+aside button {
+    width: 100%;
+    background: transparent;
+    color: white;
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    text-align: left;
+}
+
+aside button:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+main {
+    flex: 1;
+    padding: 30px;
+}
+
+section {
+    display: none;
+}
+
+section.active {
+    display: block;
+}
+
+.cards {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    color: #6a0dad;
+    width: 180px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+textarea {
+    width: 400px;
+    height: 100px;
+}

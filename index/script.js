@@ -4,10 +4,8 @@ const registerForm = document.getElementById("registerForm");
 const tabs = document.querySelectorAll(".tab");
 
 function showLogin() {
-  loginForm.classList.remove("hidden");
-  registerForm.classList.add("hidden");
-  tabs[0].classList.add("active");
-  tabs[1].classList.remove("active");
+  
+  window.location.href ="login.html";
 }
 
 function showRegister() {
@@ -22,26 +20,78 @@ function showRegister() {
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
 
-  if (email && password) {
-    localStorage.setItem("loggedIn", "true");
-    // redirect to dashboard
-    window.location.href ="../dashboard/dashboard.html";
-  } else {
+  if (!email || !password) {
     alert("Enter email and password");
+    return;
   }
+
+  fetch("/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: email,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      window.location.href = "/dashboard";
+    } else {
+      alert(data.error);
+    }
+  })
+  .catch(() => alert("Server error"));
 }
 
-  function register() {
-    const fullName = document.querySelector("#registerForm input[type='text']").value;
-    const email = document.querySelector("#registerForm input[type='email']").value;
-    const password = document.querySelector("#registerForm input[type='password']").value;
 
-    if (fullName && email && password) {
-      localStorage.setItem("loggedIn", "true");
+ function register() {
+  const fullName = document.querySelector("#registerForm input[type='text']").value;
+  const email = document.querySelector("#registerForm input[type='email']").value;
+  const password = document.querySelector("#registerForm input[type='password']").value;
 
-      window.location.href ="../dashboard/dashboard.html";
-    } else {
-      alert("Please fill in all fields");
-    }
+  if (!fullName || !email || !password) {
+    alert("Please fill in all fields");
+    return;
   }
 
+  fetch("/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fullName: fullName,
+      email: email,
+      password: password
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      alert("Account created. Please login.");
+      window.location.href = "/login.html";
+    } else {
+      alert(data.error);
+    }
+  })
+  .catch(() => alert("Server error"));
+}
+
+
+// Scroll Reveal Animation
+const revealElements = document.querySelectorAll(".reveal");
+
+const observer = new IntersectionObserver(
+  (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("active");
+        observer.unobserve(entry.target); // animate only once
+      }
+    });
+  },
+  {
+    threshold: 0.15
+  }
+);
+
+revealElements.forEach(el => observer.observe(el));
