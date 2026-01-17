@@ -16,7 +16,7 @@
   </div>
 
   <div class="nav-actions">
-    <button class="get-started">Get Started</button>
+    <button class="get-started" onclick="showLogin()">Get Started</button>
   </div>
 </header>
 
@@ -99,39 +99,25 @@
   <input type="password" id="password" placeholder="Enter your password" required />
 
   <!-- IMPORTANT: type="button" -->
-  <button class="primary-btn">
+  <button type="button" class="primary-btn" onclick="login()">
     Sign In →
   </button>
 </form>
 
-<script>
-    function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
 
-    if (email && password) {
-      localStorage.setItem("loggedIn", "true");
-
-      // redirect to dashboard (example)
-      window.location.href = "../dashboard/dashboard.html";
-    } else {
-      alert("Enter email and password");
-    }
-  }
-</script>
 
       <!-- Register Form -->
       <form id="registerForm" class="form hidden">
         <label>Full Name</label>
-        <input type="text" placeholder="Enter your full name" required />
+        <input type="text" id="text" placeholder="Enter your full name" required />
 
         <label>Email</label>
-        <input type="email" placeholder="Enter your email" required />
+        <input type="email" id="email" placeholder="Enter your email" required />
 
         <label>Password</label>
-        <input type="password" placeholder="Create a password" required />
+        <input type="password" id="password" placeholder="Create a password" required />
 
-        <button class="primary-btn">Create Account →</button>
+        <button type="button" class="primary-btn" onclick="register()">Create Account →</button>
       </form>
 
       <div class="divider">OR</div>
@@ -141,8 +127,7 @@
     </div>
   </main>
 
-
-
+  <script src="script.js"></script>
 
 </body>
 </html>

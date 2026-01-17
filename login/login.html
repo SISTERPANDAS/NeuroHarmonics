@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroHarmonics | Emotion Analysis</title>
+    <link rel="stylesheet" href="login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <span>NeuroHarmonics</span>
+        </div>
+        <div class="nav-links">
+            <button class="nav-btn active"><i class="fas fa-th-large"></i> Dashboard</button>
+            <button class="nav-btn"><i class="fas fa-file-alt"></i> Monthly Report</button>
+        </div>
+        <div class="user-controls">
+            <i class="far fa-user profile-icon"></i>
+            <button class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="page-header">
+            <h1>Emotion Analysis Dashboard</h1>
+            <p>Upload data, analyze emotions, and receive personalized wellness recommendations</p>
+        </header>
+
+        <div class="main-grid">
+            <section class="card stage-card">
+                <div class="card-header purple">
+                    <i class="fas fa-upload"></i>
+                    <div>
+                        <h2>Input Stage</h2>
+                        <span>Select data source</span>
+                    </div>
+                </div>
+                <div class="input-options">
+                    <div class="option" id="eeg-upload">
+                        <i class="fas fa-file-waveform"></i>
+                        <p>Upload EEG File (EDF, CSV, TXT)</p>
+                    </div>
+                    <div class="option" id="live-eeg">
+                        <i class="fas fa-tower-broadcast"></i>
+                        <p>Connect Live EEG Device</p>
+                    </div>
+                    <div class="option" id="facial-upload">
+                        <i class="fas fa-camera"></i>
+                        <p>Upload Facial Image (JPEG, PNG)</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card stage-card">
+                <div class="card-header blue">
+                    <i class="fas fa-microchip"></i>
+                    <div>
+                        <h2>Processing Stage</h2>
+                        <span>AI-powered analysis</span>
+                    </div>
+                </div>
+                <ul class="process-steps">
+                    <li id="step-1"><i class="fas fa-bolt"></i> Data Preprocessing</li>
+                    <li id="step-2"><i class="fas fa-chart-column"></i> Feature Extraction</li>
+                    <li id="step-3"><i class="fas fa-brain"></i> AI Classification</li>
+                    <li id="step-4"><i class="fas fa-check-double"></i> Result Validation</li>
+                </ul>
+                <button id="analyze-btn" class="btn-gradient">Analyze Emotion</button>
+            </section>
+
+            <section class="card stage-card" id="result-card">
+                <div class="card-header green">
+                    <i class="fas fa-chart-line"></i>
+                    <div>
+                        <h2>Detection Result</h2>
+                        <span>Classification output</span>
+                    </div>
+                </div>
+                <div class="empty-state" id="result-content">
+                    <i class="fas fa-chart-area placeholder-icon"></i>
+                    <p>Run analysis to see emotion detection results</p>
+                </div>
+            </section>
+        </div>
+
+        <div class="bottom-grid">
+            <section class="card info-card">
+                <div class="card-header teal">
+                    <i class="fas fa-database"></i>
+                    <h2>Database Interaction</h2>
+                </div>
+                <div class="empty-state">
+                    <i class="far fa-clock"></i>
+                    <p>No data stored yet.</p>
+                </div>
+            </section>
+            <section class="card info-card">
+                <div class="card-header purple-light">
+                    <i class="fas fa-sparkles"></i>
+                    <h2>Personalized Recommendations</h2>
+                </div>
+                <div class="empty-state">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <p>Complete analysis for suggestions.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="login.js"></script>
+</body>
+</html>

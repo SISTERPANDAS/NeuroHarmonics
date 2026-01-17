@@ -1,0 +1,101 @@
+:root {
+    --bg-color: #f8fafc;
+    --card-bg: #ffffff;
+    --primary: #2563eb;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --border-color: #e2e8f0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.logo { display: flex; align-items: center; gap: 0.5rem; color: #1d4ed8; font-weight: 700; font-size: 1.25rem; }
+
+/* Grid Layout */
+.container { max-width: 1300px; margin: 0 auto; padding: 2.5rem; }
+.page-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.page-header p { color: var(--text-muted); margin-bottom: 2.5rem; }
+
+.main-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Cards */
+.card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+    border: 1px solid var(--border-color);
+}
+
+.card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.card-header h2 { font-size: 1.1rem; }
+.card-header span { font-size: 0.75rem; color: var(--text-muted); }
+
+/* Buttons & Inputs */
+.option {
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.option:hover { background: #f1f5f9; border-color: var(--primary); }
+
+.btn-gradient {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 0.75rem;
+    background: linear-gradient(90deg, #93c5fd 0%, #c084fc 100%);
+    color: white;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* Steps */
+.process-steps li {
+    list-style: none;
+    padding: 0.75rem;
+    background: #f8fafc;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.step-active { color: var(--primary) !important; background: #eff6ff !important; font-weight: 600; }
+
+.empty-state { text-align: center; color: var(--text-muted); padding: 3rem 0; }
+.placeholder-icon { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem; }

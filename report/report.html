@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report | NeuroHarmonics</title>
+    <link rel="stylesheet" href="report.css">
+   
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            <span>NeuroHarmonics</span>
+        </div>
+        <div class="nav-links">
+            <a href="../dashboard/dashboard.html" class="nav-btn"><i class="fas fa-th-large"></i> Dashboard</a>
+            <button class="nav-btn active"><i class="fas fa-file-alt"></i> Monthly Report</button>
+        </div>
+        <div class="user-controls">
+            <i class="far fa-user profile-icon"></i>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="page-header flex-header">
+            <div>
+                <h1>Monthly Emotional Insights</h1>
+                <p>Data-driven summary of your cognitive and emotional well-being for January 2026</p>
+            </div>
+            <button class="download-btn"><i class="fas fa-download"></i> Export PDF</button>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-label">Total Sessions</span>
+                <span class="stat-value">42</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Dominant Emotion</span>
+                <span class="stat-value text-blue">Focused</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Average Confidence</span>
+                <span class="stat-value">88.4%</span>
+            </div>
+        </div>
+
+        <div class="report-content">
+            <section class="card chart-section">
+                <div class="card-header">
+                    <i class="fas fa-chart-area"></i>
+                    <h2>Emotion Trends Over Time</h2>
+                </div>
+                <div class="chart-container">
+                    
+                    <div class="mock-chart">
+                        <div class="bar" style="height: 60%" data-label="Week 1"></div>
+                        <div class="bar" style="height: 85%" data-label="Week 2"></div>
+                        <div class="bar" style="height: 40%" data-label="Week 3"></div>
+                        <div class="bar" style="height: 75%" data-label="Week 4"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card history-section">
+                <div class="card-header">
+                    <i class="fas fa-history"></i>
+                    <h2>Session History</h2>
+                </div>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Top Emotion</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody id="history-body">
+                        </tbody>
+                </table>
+            </section>
+        </div>
+    </main>
+
+    <script src="report.js"></script>
+</body>
+</html>
