@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showLogin() {
   
-  window.location.href ="../../templates/login/login.html";
+  window.location.href ="../../templates/index/login.html";
 }
 
 function showRegister() {
