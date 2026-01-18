@@ -1,12 +1,15 @@
 from flask import Blueprint, request, jsonify, session
-from models import db, User
+from models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth = Blueprint("auth", __name__)
+auth = Blueprint("auth", __name__, url_prefix="/api")
 
 @auth.route("/register", methods=["POST"])
 def register():
-    data = request.json
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "Invalid data"}), 400
 
     if User.query.filter_by(email=data["email"]).first():
         return jsonify({"error": "Email already exists"}), 409
@@ -17,6 +20,7 @@ def register():
         password=generate_password_hash(data["password"])
     )
 
+    from models import db
     db.session.add(user)
     db.session.commit()
 
@@ -25,12 +29,14 @@ def register():
 
 @auth.route("/login", methods=["POST"])
 def login():
-    user = User.query.filter_by(email=request.json["email"]).first()
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid request"}), 400
 
-    if not user or not check_password_hash(user.password, request.json["password"]):
+    user = User.query.filter_by(email=data["email"]).first()
+
+    if not user or not check_password_hash(user.password, data["password"]):
         return jsonify({"error": "Invalid credentials"}), 401
 
     session["user_id"] = user.id
-    session["role"] = user.role
-
     return jsonify({"success": True})

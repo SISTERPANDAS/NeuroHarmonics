@@ -1,11 +1,22 @@
-alert("Script loaded successfully");
+
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 const tabs = document.querySelectorAll(".tab");
 
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("loginForm");
+
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault(); //stops page refresh
+      login();
+    });
+  }
+});
+
 function showLogin() {
   
-  window.location.href ="login.html";
+  window.location.href ="../../templates/login/login.html";
 }
 
 function showRegister() {
@@ -25,7 +36,7 @@ function showRegister() {
     return;
   }
 
-  fetch("/login", {
+  fetch("/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -55,7 +66,7 @@ function showRegister() {
     return;
   }
 
-  fetch("/register", {
+  fetch("/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -68,7 +79,7 @@ function showRegister() {
   .then(data => {
     if (data.success) {
       alert("Account created. Please login.");
-      window.location.href = "/login.html";
+      window.location.href = "../../templates/index/login.html";
     } else {
       alert(data.error);
     }

@@ -41,7 +41,7 @@ async function analyzeData() {
 
 function logout() {
   localStorage.removeItem("loggedIn");
-  window.location.href = "../index/index.html";
+  window.location.href = "../../templates/index/index.html";
 }
 
 
