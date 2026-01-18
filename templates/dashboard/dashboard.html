@@ -1,108 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeuroHarmonics - Emotion Analysis</title>
-
-  <!-- Font Awesome -->
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-
-  <!-- Custom CSS -->
- <link rel="stylesheet" href="../../static/dashboard/dashboard.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroHarmonics | User Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+<body class="portal-body">
 
-<body class="page">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo-text">Neuro<span>Harmonics</span></h2>
+            <p class="sub-text">USER PORTAL</p>
+        </div>
 
-<header class="header">
-  <div class="logo">
-    <i class="fas fa-brain"></i>
-    <span>NeuroHarmonics</span>
-  </div>
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button class="nav-item" onclick="showSection('live-analysis')">
+                <i class="fas fa-brain"></i> Live Analysis
+            </button>
+            <button class="nav-item" onclick="showSection('community')">
+                <i class="fas fa-comment-alt"></i> Community
+            </button>
+            <button class="nav-item" onclick="showSection('recommendations')">
+                <i class="fas fa-star"></i> Recommendations
+            </button>
+        </nav>
 
-  <div class="top-actions">
-    <div class="profile">
-      <i class="far fa-user"></i>
-    </div>
-    <button class="btn-logout" onclick="logout()">
-      <i class="fas fa-sign-out-alt"></i> Logout
-    </button>
-  </div>
-</header>
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">
+                    {{ session.get('username', 'U')[0].upper() }}
+                </div>
+                <div class="user-info">
+    <span class="user-name">{{ session.get('username', 'Guest User') }}</span>
+    <span class="user-role">User</span>
+                </div>
+            </div>
+            <a href="/logout" class="sign-out-btn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </aside>
 
-<main class="main">
-  <h1 class="title">Emotion Analysis Dashboard</h1>
-  <p class="subtitle">
-    Upload data, analyze emotions, and receive personalized wellness recommendations
-  </p>
+    <main class="main-content">
+        
+        <section id="dashboard" class="content-section">
+            <h1 class="welcome-text">Hello, <span>{{ session['username'] }}</span></h1>
+            <p class="subtitle">Here's your neural performance overview.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">Focus Score <i class="fas fa-bolt"></i></div>
+                    <div class="stat-value">78</div>
+                    <div class="stat-trend positive">↑ 12% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Calmness Level <i class="fas fa-wind"></i></div>
+                    <div class="stat-value">62</div>
+                    <div class="stat-trend negative">↓ 5% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Stress Index <i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-trend positive">↓ 8% vs last week</div>
+                </div>
+            </div>
 
-  <div class="grid">
+            <div class="chart-container glass">
+                <h3><i class="fas fa-brain"></i> Weekly Brainwave Trends</h3>
+                <div class="placeholder-chart">
+                    </div>
+            </div>
+        </section>
 
-    <!-- INPUT -->
-<section class="card">
-  <h2 class="card-title">Input Stage</h2>
+        <section id="live-analysis" class="content-section" style="display:none;">
+            <h1>Live EEG Analysis</h1>
+            <p>Connect your device or simulate a session.</p>
+            <div class="analysis-box glass">
+                <div class="simulation-circle">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <button class="start-btn">Start Simulation</button>
+            </div>
+        </section>
 
-  <!-- EEG UPLOAD -->
-  <div class="item">
-    <i class="fas fa-file-upload blue"></i>
-    <div class="item-content">
-      <p class="item-title">Upload EEG File</p>
-      <p class="item-sub">.edf, .csv, .txt</p>
+        <section id="community" class="content-section" style="display:none;">
+            <h1>Community Chat</h1>
+            <div class="chat-container glass">
+                <div class="chat-messages">No recent messages.</div>
+                <div class="chat-input-area">
+                    <input type="text" placeholder="Type a message...">
+                    <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </section>
 
-      <!-- FILE INPUT -->
-      <input
-        type="file"
-        id="eegFile"
-        class="file-input"
-        accept=".edf,.csv,.txt"
-        onchange="handleEEGFile()"
-      />
+    </main>
 
-      <p id="file-name" class="file-name"></p>
-    </div>
-  </div>
-
-  <!-- LIVE EEG -->
-  <div class="item">
-    <i class="fas fa-rss purple"></i>
-    <div>
-      <p class="item-title">Connect Live EEG Device</p>
-      <p class="item-sub">Real-time stream</p>
-    </div>
-  </div>
-
-  <!-- IMAGE -->
-  <div class="item">
-    <i class="fas fa-camera teal"></i>
-    <div>
-      <p class="item-title">Upload Facial Image</p>
-      <p class="item-sub">JPEG / PNG</p>
-    </div>
-  </div>
-</section>
-
-
-    <!-- PROCESS -->
-    <section class="card">
-      <h2 class="card-title">Processing Stage</h2>
-      <button class="btn-main" onclick="analyzeData()">
-        <i class="fas fa-atom"></i> Analyze Emotion
-      </button>
-    </section>
-
-    <!-- RESULT -->
-    <section class="card center">
-      <h2 class="card-title">Detection Result</h2>
-      <div id="result" class="result">
-        Upload data to view results
-      </div>
-    </section>
-
-  </div>
-</main>
-
-<script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
-<!--<script src="../../static/dashboard/dashboard.js"></script>-->
+    <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,170 @@
+:root {
+  --bg-dark: #050505;
+  --card-bg: #111111;
+  --accent-purple: #8a2be2;
+  --text-gray: #a0a0a0;
+}
+
+/* Hero Section */
+.tips-hero {
+  background: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.hero-title span {
+  color: var(--accent-purple);
+}
+
+.subtitle {
+  color: var(--text-gray);
+  font-size: 1.2rem;
+  margin-bottom: 50px;
+}
+
+/* Grid Layout */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 25px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Card Styling */
+.tip-card {
+  background: var(--card-bg);
+  border: 1px solid #222;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: left;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.tip-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--accent-purple);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.icon-box {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Icon Colors */
+.yellow i { color: #ffd700; }
+.blue i { color: #00d4ff; }
+.orange i { color: #ff8c00; }
+.purple i { color: #a855f7; }
+.green i { color: #22c55e; }
+.pink i { color: #ec4899; }
+
+.label {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  font-weight: bold;
+  color: var(--text-gray);
+}
+
+.tip-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.tip-card p {
+  color: var(--text-gray);
+  line-height: 1.6;
+}
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.05); /* Semi-transparent white */
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --accent-purple: #8a2be2;
+  --text-gray: #e0e0e0;
+}
+
+body {
+  margin: 0;
+  background: transparent !important;
+  color: white;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+/* 1. Full Page Background Video */
+.video-background {
+  position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2; /* Moves it behind everything, including the glass layer */
+    overflow: hidden;
+    background: black;
+}
+
+.video-background video {
+  width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures it fills the whole screen without stretching */
+    filter: brightness(0.5) contrast(1.1);
+}
+
+/* 2. Glassmorphism for Navbar */
+.navbar.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* 3. Glassmorphism for Cards */
+.tip-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px); /* Frosted glass effect */
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 30px;
+  text-align: left;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.tip-card:hover {
+  transform: translateY(-10px);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent-purple);
+  box-shadow: 0 8px 32px 0 rgba(138, 43, 226, 0.2);
+}
+
+/* Adjusting Text for readability against video */
+.subtitle, .tip-card p {
+  color: var(--text-gray);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5); /* Shadow for readability */
+}
+
+.hero-title {
+  text-shadow: 2px 2px 10px rgba(0,0,0,0.7);
+}

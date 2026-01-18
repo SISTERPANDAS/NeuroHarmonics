@@ -35,6 +35,23 @@ body {
   color: #fff;
 }
 
+.nav-link {
+  text-decoration: none !important;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 18px #a855f7;
+}
+
 .get-started {
   background: linear-gradient(135deg, #a855f7, #7c3aed);
   border: none;
@@ -350,28 +367,29 @@ body {
 
 /* Right Section (Video) */
 .right-section {
-  width: 55%;
-  position: relative;
+  position: fixed;   /* Anchors it relative to the viewport */
+  top: 0;
+  right: 0;
+  width: 50%;        /* Adjust based on your layout needs */
+  height: 100vh;     /* Full viewport height */
   overflow: hidden;
+  z-index: 1;        /* Keeps it behind or in front of other elements */
 }
 
 .right-section video {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: cover; /* Ensures video fills the area without stretching */
 }
 
-/* Video Overlay */
 .video-overlay {
   position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   text-align: center;
+  color: white;
+  z-index: 2;
 }
 
 /* Admin Button */

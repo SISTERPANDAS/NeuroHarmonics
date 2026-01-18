@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, session
 from models import db
 from auth_routes import auth
-from admin_routes import admin   # ✅ you have this
+from admin_routes import admin 
 
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
@@ -24,17 +24,30 @@ def home():
 
 @app.route("/login", methods=["GET"])
 def login_page():
-    return render_template("index/login.html")   # 🔴 FIXED
+    return render_template("index/login.html")  
 
 @app.route("/register", methods=["GET"])
 def register_page():
-    return render_template("index/login.html")  # 🔴 FIXED
+    return render_template("index/login.html")
 
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
         return redirect("/login")
-    return render_template("dashboard/dashboard.html")
+    user_name = session.get("username", "Guest User")
+    return render_template("dashboard/dashboard.html", username=user_name)
+
+@app.route("/admin")
+def admin_page():
+    return render_template("admin/admin.html")
+
+@app.route("/health-tips")
+def health_tips():
+    # Renders the new page we are about to create
+    return render_template("index/health_tips.html")
 
 if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
+

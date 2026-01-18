@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session
-from models import User
+from models import db, User
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint("auth", __name__, url_prefix="/api")
@@ -7,36 +7,34 @@ auth = Blueprint("auth", __name__, url_prefix="/api")
 @auth.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
-
-    if not data:
-        return jsonify({"error": "Invalid data"}), 400
-
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"error": "Email already exists"}), 409
-
-    user = User(
-        full_name=data["fullName"],
-        email=data["email"],
-        password=generate_password_hash(data["password"])
+    
+    # Use .get() to avoid errors if a field is missing
+    new_user = User(
+        username=data.get("fullName"), # Map 'fullName' from JS to 'username' in DB
+        email=data.get("email"),
+        password=generate_password_hash(data.get("password")),
+        gender=data.get("gender")      # Added based on your DB schema
     )
 
-    from models import db
-    db.session.add(user)
-    db.session.commit()
-
-    return jsonify({"success": True})
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"success": True}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
 
 
 @auth.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid request"}), 400
+    user = User.query.filter_by(email=data.get("email")).first()
 
-    user = User.query.filter_by(email=data["email"]).first()
-
-    if not user or not check_password_hash(user.password, data["password"]):
-        return jsonify({"error": "Invalid credentials"}), 401
-
-    session["user_id"] = user.id
-    return jsonify({"success": True})
+    if user and check_password_hash(user.password, data.get("password")):
+        # YOU MUST ADD THIS LINE
+        session["user_id"] = user.user_id
+        session["username"] = user.username # This matches line 35 in your HTML
+        
+        return jsonify({"success": True})
+    
+    return jsonify({"success": False, "error": "Invalid credentials"}), 401
