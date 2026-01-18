@@ -19,8 +19,8 @@ with app.app_context():
     db.create_all()
 
 @app.route("/")
-def index():
-    return redirect("index/index.html")
+def home():
+    return render_template("index/index.html")
 
 @app.route("/login", methods=["GET"])
 def login_page():

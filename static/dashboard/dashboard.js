@@ -1,3 +1,4 @@
+
 async function analyzeData() {
   const fileInput = document.getElementById("eegFile");
   const resultBox = document.getElementById("result");
@@ -41,7 +42,7 @@ async function analyzeData() {
 
 function logout() {
   localStorage.removeItem("loggedIn");
-  window.location.href = "../../templates/index/index.html";
+  window.location.href = "/";
 }
 
 
