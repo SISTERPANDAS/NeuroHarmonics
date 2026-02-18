@@ -10,15 +10,14 @@
 <body>
 
 <div class="video-background">
-    <video autoplay muted loop playsinline>
-      <source src="{{ url_for('static', filename='index/wellness2.mp4') }}" type="video/mp4">
-    </video>
-  </div>
+  <video autoplay muted loop playsinline poster="https://res.cloudinary.com/dkjp9svlj/image/upload/f_auto,q_auto/v1771333699/wellness2_1_exbinw.jpg">
+    <source src="https://res.cloudinary.com/dkjp9svlj/video/upload/so_0,eo_5,w_1280,f_auto,q_auto/v1771333699/wellness2_1_exbinw.mp4" type="video/mp4">
+</div>
 
 <header class="navbar glass">
     <div class="logo">🧠 <span>NeuroHarmonics</span></div>
     <nav class="nav-links">
-      <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('home') }}">← Back</a>
     </nav>
     <div class="nav-actions">
       <button class="get-started" onclick="showLogin()">Get Started</button>
@@ -88,5 +87,6 @@
 
   <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
   <script src="{{ url_for('static', filename='index/script.js') }}"></script>
+
 </body>
 </html>

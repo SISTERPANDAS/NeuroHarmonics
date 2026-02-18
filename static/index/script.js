@@ -28,30 +28,25 @@ function showRegister() {
 
 
   async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-    try {
-        const response = await fetch("/api/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "same-origin",
-            body: JSON.stringify({ email, password })
-        });
+  const response = await fetch("/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify({ email, password })
+  });
 
-        const data = await response.json();
+  const data = await response.json();
 
-        if (data.success) {
-            // Redirect to the Flask dashboard route
-            window.location.href = "/dashboard";
-        } else {
-            alert(data.error);
-        }
-    } catch (error) {
-        console.error("Login Error:", error);
-        alert("Server error. Please try again later.");
-    }
+  if (data.success) {
+    window.location.href = "/dashboard";
+  } else {
+    alert(data.error);
+  }
 }
+
 
 
  function register() {
@@ -60,30 +55,32 @@ function showRegister() {
   const password = document.querySelector("#registerForm input[type='password']").value;
 
   if (!fullName || !email || !password) {
-    alert("Please fill in all fields");
+    alert("Please fill all fields");
     return;
   }
 
   fetch("/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fullName: fullName,
-      email: email,
-      password: password
-    })
+    body: JSON.stringify({ fullName, email, password })
   })
-  .then(res => res.json())
-  .then(data => {
+  .then(async res => {
+    const data = await res.json();
+    console.log("REGISTER RESPONSE:", data);
+
     if (data.success) {
-      alert("Account created. Please login.");
+      alert("🎉 Registration successful! Please login.");
       window.location.href = "/login";
     } else {
-      alert(data.error);
+      alert(data.error || "Registration failed");
     }
   })
-  .catch(() => alert("Server error"));
+  .catch(err => {
+    console.error("REGISTER ERROR:", err);
+    alert("Server error. Check console.");
+  });
 }
+
 
 
 // Scroll Reveal Animation
@@ -108,49 +105,4 @@ revealElements.forEach(el => observer.observe(el));
 function goToAdminLogin() {
     // Redirect to the Flask route URL
     window.location.href = "/admin";
-}
-
-async function handleRegister(event) {
-  event.preventDefault();
-  
-  const fullName = document.getElementById('reg-fullname').value;
-  const email = document.getElementById('reg-email').value;
-  const password = document.getElementById('reg-password').value;
-
-  const response = await fetch('/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ fullName, email, password })
-  });
-
-  const result = await response.json();
-  if (result.success) {
-    alert("Registration successful! Please login.");
-    window.location.href = "/login";
-  } else {
-    alert(result.error);
-  }
-}
-
-async function registerUser() {
-    const userData = {
-        fullName: document.getElementById("reg-name").value,
-        username: document.getElementById("reg-username").value, // Required by your DB
-        email: document.getElementById("reg-email").value,
-        password: document.getElementById("reg-password").value
-    };
-
-    const response = await fetch("/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(userData)
-    });
-
-    const result = await response.json();
-    if (result.success) {
-        alert("Registration Successful!");
-        window.location.href = "/login";
-    } else {
-        alert("Error: " + result.error);
-    }
 }

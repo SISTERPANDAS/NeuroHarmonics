@@ -7,7 +7,7 @@
   <title>Wellness Login</title>
 </head>
 <body>
-
+<canvas id="neural-bg"></canvas>
 <a href="{{ url_for('home') }}" class="back-btn">← Back</a>
 
 <!-- Main Layout -->
@@ -53,8 +53,9 @@
         <input type="password" placeholder="Create a password" required />
 
         <button type="button" class="primary-btn" onclick="register()">
-          Create Account →
+            Create Account →
         </button>
+
       </form>
 
       <div class="divider">OR</div>
@@ -74,9 +75,10 @@
   <!-- RIGHT: Video Section -->
 <section class="right-section">
   <video autoplay muted loop playsinline>
-    <source src="{{ url_for('static', filename='index/wellness.mp4') }}" type="video/mp4" />
+    <source src="https://res.cloudinary.com/dkjp9svlj/video/upload/w_854,q_auto:eco,f_auto,vc_auto/v1771333621/wellness_cobm6j.mp4" type="video/mp4" />
     Your browser does not support the video tag.
   </video>
+
   <div class="video-overlay">
     <h2>Understand • Analyze • Heal</h2>
     <p>AI-powered emotional wellness platform</p>
@@ -85,5 +87,6 @@
 
 </main>
 <script src="../../static/index/script.js"></script>
+<script type="module" src="../../static/index/neural-bg.js"></script>
 </body>
 </html>

@@ -6,7 +6,7 @@ from admin_routes import admin
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///neuroharmonics.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:06kingbeast#2328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -45,6 +45,12 @@ def admin_page():
 def health_tips():
     # Renders the new page we are about to create
     return render_template("index/health_tips.html")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
+
 
 if __name__ == "__main__":
     with app.app_context():

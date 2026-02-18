@@ -9,10 +9,12 @@
 }
 
 body {
-  background: radial-gradient(circle at top, #1b103f, #0c081a);
+  background: transparent;
   color: #e9d5ff;
   min-height: 100vh;
+  overflow-x: hidden;
 }
+
 
 /* =========================
    Navbar
@@ -359,7 +361,7 @@ body {
 .left-section {
   width: 45%;
   padding: 60px;
-  background: #382958;
+  background: #38295866;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -367,19 +369,19 @@ body {
 
 /* Right Section (Video) */
 .right-section {
-  position: fixed;   /* Anchors it relative to the viewport */
+  position: fixed;   
   top: 0;
   right: 0;
-  width: 50%;        /* Adjust based on your layout needs */
-  height: 100vh;     /* Full viewport height */
+  width: 50%;    
+  height: 100vh;     
   overflow: hidden;
-  z-index: 1;        /* Keeps it behind or in front of other elements */
+  z-index: 1;        
 }
 
 .right-section video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Ensures video fills the area without stretching */
+  object-fit: cover; 
 }
 
 .video-overlay {
@@ -423,4 +425,15 @@ body {
   .right-section {
     height: 250px;
   }
+}
+
+#neural-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;       
+  pointer-events: none; 
+  background: radial-gradient(circle at top, #1b103f, #0c081a);
 }
