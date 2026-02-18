@@ -1,34 +1,63 @@
 :root {
-    --bg-black: #080808;
-    --sidebar-bg: #0f0f0f;
-    --card-bg: #141414;
-    --accent-purple: #8a2be2;
-    --text-muted: #888;
+    --bg-black: #05010a; /* Deeper black-purple */
+    --sidebar-bg: #0d041a; /* Dark violet sidebar */
+    --card-bg: rgba(22, 10, 41, 0.7); /* Translucent neural cards */
+    --accent-purple: #9d4edd; /* Electric purple */
+    --glow-purple: #c77dff; /* Neon highlight */
+    --text-muted: #a0a0c0;
+    --neuron-line: rgba(157, 78, 221, 0.2);
+}
+
+.main-content {
+    margin-left: 280px; /* This MUST match the sidebar width */
+    padding: 60px;
+    width: calc(100% - 280px); /* Ensures it doesn't overflow the screen */
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
 }
 
 body.portal-body {
     background-color: var(--bg-black);
-    color: white;
+    /* Neural Network Background Pattern */
+    background-image: 
+        radial-gradient(circle at 2px 2px, var(--neuron-line) 1px, transparent 0);
+    background-size: 40px 40px;
+    color: #e0e0ff;
     margin: 0;
-    display: flex;
+    display: block;
     font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
 }
 
-/* Sidebar Styling */
+/* Sidebar Styling with Glassmorphism */
 .sidebar {
     width: 280px;
     height: 100vh;
-    background: var(--sidebar-bg);
+    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1a0b2e 100%);
     position: fixed;
-    border-right: 1px solid #222;
+    border-right: 1px solid var(--neuron-line);
     display: flex;
     flex-direction: column;
     padding: 30px 20px;
+    box-sizing: border-box;
+    left: 0;
+    top: 0;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 }
 
-.logo-text span { color: var(--accent-purple); }
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
 
-.nav-menu { margin-top: 50px; flex-grow: 1; }
+.logo-text span { 
+    color: var(--accent-purple); 
+    text-shadow: 0 0 15px var(--accent-purple);
+}
 
 .nav-item {
     width: 100%;
@@ -39,31 +68,112 @@ body.portal-body {
     text-align: left;
     font-size: 1rem;
     cursor: pointer;
-    border-radius: 8px;
-    transition: 0.3s;
-    margin-bottom: 10px;
+    border-radius: 12px;
+    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .nav-item.active, .nav-item:hover {
-    background: rgba(138, 43, 226, 0.1);
+    background: rgba(157, 78, 221, 0.15);
     color: white;
+    box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
+    border-left: 4px solid var(--accent-purple);
 }
 
-.sidebar-footer { border-top: 1px solid #222; padding-top: 20px; }
+/* Stat Cards with Neural Glow */
+.stat-card {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 20px;
+    border: 1px solid var(--neuron-line);
+    backdrop-filter: blur(12px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-.user-profile { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(157, 78, 221, 0.2);
+    border-color: var(--accent-purple);
+}
 
-.avatar { width: 40px; height: 40px; background: var(--accent-purple); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+.stat-value {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #fff, var(--glow-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+}
 
-.sign-out-btn { color: #ff4d4d; text-decoration: none; font-weight: bold; }
+/* Chat & Forms with Neuron Aesthetics */
+.glass-card {
+    background: rgba(25, 12, 45, 0.6);
+    backdrop-filter: blur(15px);
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid var(--neuron-line);
+}
 
-/* Main Content Area */
-.main-content { margin-left: 280px; padding: 60px; width: 100%; }
+.submit-btn {
+    background: linear-gradient(45deg, var(--accent-purple), #5a189a);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+    transition: 0.3s;
+}
 
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 40px; }
+.submit-btn:hover {
+    filter: brightness(1.2);
+    transform: scale(1.02);
+}
 
-.stat-card { background: var(--card-bg); padding: 30px; border-radius: 15px; border: 1px solid #222; }
+.sidebar-footer { 
+    border-top: 1px solid var(--neuron-line); 
+    padding-top: 20px; 
+    margin-top: auto; 
+}
+.sign-out-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: rgba(255, 77, 77, 0.05); /* Very subtle red tint */
+    color: #ff5f5f; /* Softer red for the purple theme */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 77, 77, 0.2);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-.stat-value { font-size: 3rem; font-weight: 800; margin: 10px 0; }
+.sign-out-btn i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
 
-.glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 30px; }
+.sign-out-btn:hover {
+    background: rgba(255, 77, 77, 0.15);
+    color: #ff4d4d;
+    border-color: rgba(255, 77, 77, 0.5);
+    box-shadow: 0 0 20px rgba(255, 77, 77, 0.1);
+    transform: translateY(-2px);
+}
+
+.sign-out-btn:hover i {
+    transform: translateX(3px); /* Makes the arrow "exit" slightly on hover */
+}
+
+.sign-out-btn:active {
+    transform: translateY(0);
+}

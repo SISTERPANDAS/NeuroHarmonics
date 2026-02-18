@@ -37,12 +37,26 @@ def register():
 @auth.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
+    email = data.get("email")
+    password = data.get("password")
 
-    user = User.query.filter_by(email=data.get("email")).first()
+    # 1. Fetch the user from Supabase
+    user = User.query.filter_by(email=email).first()
 
-    if not user or not check_password_hash(user.password, data.get("password")):
-        return jsonify({"success": False, "error": "Invalid credentials"}), 401
+    # 2. Check credentials
+    if not user or not check_password_hash(user.password, password):
+        return jsonify({"success": False, "error": "Invalid email or password"}), 401
 
+    # 3. SET STATUS TO ACTIVE
+    user.status = "active"
+    
+    try:
+        db.session.commit() # Save the "active" status to the database
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+    # 4. Set Session Data
     session["user_id"] = user.id
     session["username"] = user.username
     session["role"] = user.role

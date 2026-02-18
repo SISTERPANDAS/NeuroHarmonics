@@ -381,17 +381,20 @@ body {
 .right-section video {
   width: 100%;
   height: 100%;
+  opacity: 0.8; /* Change this number to adjust transparency */
+  transition: opacity 0.5s ease; /* Optional: Makes the change smooth if it loads in */
   object-fit: cover; 
 }
 
 .video-overlay {
   position: absolute;
-  top: 50%;
+  top: 10%;           /* Moves it near the top */
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%); /* Only centers horizontally */
   text-align: center;
   color: white;
   z-index: 2;
+  width: 90%;         /* Optional: Ensures text doesn't hit edges on mobile */
 }
 
 /* Admin Button */
@@ -437,3 +440,4 @@ body {
   pointer-events: none; 
   background: radial-gradient(circle at top, #1b103f, #0c081a);
 }
+

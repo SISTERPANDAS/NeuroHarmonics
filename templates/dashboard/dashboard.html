@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="portal-body">
-
+    <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%); z-index: -1;"></div>
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2 class="logo-text">Neuro<span>Harmonics</span></h2>
@@ -25,6 +25,9 @@
             <button class="nav-item" onclick="showSection('community')">
                 <i class="fas fa-comment-alt"></i> Community
             </button>
+            <button class="nav-item" onclick="showSection('support')">
+                <i class="fas fa-headset"></i> Support & Feedback
+            </button>
             <button class="nav-item" onclick="showSection('recommendations')">
                 <i class="fas fa-star"></i> Recommendations
             </button>
@@ -36,8 +39,8 @@
                     {{ session.get('username', 'U')[0].upper() }}
                 </div>
                 <div class="user-info">
-    <span class="user-name">{{ session.get('username', 'Guest User') }}</span>
-    <span class="user-role">User</span>
+                    <span class="user-name">{{ session.get('username', 'Guest User') }}</span>
+                    <span class="user-role">User</span>
                 </div>
             </div>
             <a href="/logout" class="sign-out-btn">
@@ -72,32 +75,64 @@
 
             <div class="chart-container glass">
                 <h3><i class="fas fa-brain"></i> Weekly Brainwave Trends</h3>
-                <div class="placeholder-chart">
-                    </div>
+                <div class="placeholder-chart"></div>
             </div>
         </section>
 
         <section id="live-analysis" class="content-section" style="display:none;">
             <h1>Live EEG Analysis</h1>
-            <p>Connect your device or simulate a session.</p>
             <div class="analysis-box glass">
-                <div class="simulation-circle">
-                    <i class="fas fa-microchip"></i>
-                </div>
+                <div class="simulation-circle"><i class="fas fa-microchip"></i></div>
                 <button class="start-btn">Start Simulation</button>
             </div>
         </section>
 
-        <section id="community" class="content-section" style="display:none;">
-            <h1>Community Chat</h1>
-            <div class="chat-container glass">
-                <div class="chat-messages">No recent messages.</div>
-                <div class="chat-input-area">
-                    <input type="text" placeholder="Type a message...">
-                    <button class="send-btn"><i class="fas fa-paper-plane"></i></button>
-                </div>
+        <section id="support" class="content-section" style="display:none;">
+            <h1>Support & Feedback</h1>
+            <p class="subtitle">Help us improve the NeuroHarmonics experience.</p>
+
+            <div class="support-grid">
+                <div class="glass-card feedback-form">
+    <h3><i class="fas fa-star"></i> Rate Your Experience</h3>
+    <form onsubmit="submitFeedback(event)"> <div class="rating-group">
+            <label>Rating (1-5):</label>
+            <input type="number" name="rating" min="1" max="5" required>
+        </div>
+        <textarea name="comment" placeholder="Tell us what you think about the app..."></textarea>
+        <button type="submit" class="submit-btn">Send Feedback</button>
+    </form>
+</div>
+
+<div class="glass-card contact-form">
+    <h3><i class="fas fa-envelope"></i> Contact Support</h3>
+    <form onsubmit="sendSupportMessage(event)"> <input type="text" name="subject" placeholder="Subject" required>
+        <textarea name="message" placeholder="Describe your issue or question..." required></textarea>
+        <button type="submit" class="submit-btn">Send Message</button>
+    </form>
+</div>
             </div>
         </section>
+
+        <section id="community" class="content-section" style="display:none;">
+    <h1>Community Chat</h1>
+    <div class="chat-container glass">
+        <div class="chat-messages" id="chat-box">
+            {% for msg in community_messages %}
+                <div class="message">
+                    <span class="msg-user"><strong>{{ msg.username }}:</strong></span>
+                    <span class="msg-content">{{ msg.content }}</span>
+                    <small class="msg-time">{{ msg.timestamp.strftime('%H:%M') }}</small>
+                </div>
+            {% else %}
+                <div class="no-msg">No recent messages. Start the conversation!</div>
+            {% endfor %}
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="community-input" placeholder="Type a message...">
+            <button class="send-btn" onclick="postToCommunity()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</section>
 
     </main>
 
