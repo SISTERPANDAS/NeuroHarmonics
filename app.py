@@ -1,12 +1,16 @@
 from flask import Flask, render_template, redirect, session
 from models import db
 from auth_routes import auth
-from admin_routes import admin 
+from admin_routes import admin
+import os
 
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:06kingbeast#2328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "sqlite:///neuroharmonics.db",
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)

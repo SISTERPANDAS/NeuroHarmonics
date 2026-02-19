@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault(); //stops page refresh
       login();
     });
-  }
+  } 
 });
 
 function showLogin() {
