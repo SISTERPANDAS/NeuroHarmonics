@@ -81,7 +81,17 @@ function showRegister() {
   });
 }
 
-
+function slideRight() {
+  const slider = document.getElementById('testimonialSlider');
+  const cardWidth = 345; // Card (320px) + Gap (25px)
+  
+  // If at the very end, scroll back to the beginning
+  if (slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 10) {
+    slider.scrollTo({ left: 0, behavior: 'smooth' });
+  } else {
+    slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+  }
+}
 
 // Scroll Reveal Animation
 const revealElements = document.querySelectorAll(".reveal");

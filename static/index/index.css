@@ -497,3 +497,136 @@ body {
   pointer-events: none;
   background: radial-gradient(circle at top, #1b103f, #0c081a);
 }
+
+/* Testimonials Styling */
+.testimonials {
+  padding: 80px 60px;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+  color: #fff;
+}
+
+.section-title span {
+  color: var(--accent-purple);
+}
+
+.testimonial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.testimonial-card {
+  background: rgba(20, 12, 47, 0.6); /* Matching feature-card vibe */
+  padding: 30px;
+  border-radius: 20px;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  backdrop-filter: blur(10px);
+  transition: 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent-purple);
+  box-shadow: 0 0 20px rgba(138, 43, 226, 0.2);
+}
+
+.testimonial-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.testimonial-slider {
+  display: flex;
+  gap: 25px;
+  overflow-x: auto; /* Enables horizontal scrolling */
+  scroll-behavior: smooth;
+  padding: 20px 10px;
+  scrollbar-width: none; /* Hides scrollbar on Firefox */
+}
+
+.testimonial-slider::-webkit-scrollbar {
+  display: none; /* Hides scrollbar on Chrome/Safari */
+}
+
+.testimonial-card {
+  min-width: 320px; /* Forces cards to stay wide */
+  flex-shrink: 0;   /* Prevents cards from shrinking */
+  background: rgba(20, 12, 47, 0.6);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  backdrop-filter: blur(10px);
+  border-radius: 18px;
+  padding: 25px;
+  transition: transform 0.3s ease;
+}
+
+.scroll-arrow {
+  position: absolute;
+  right: -10px;
+  z-index: 10;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.5);
+}
+
+.rating {
+  color: #fbbf24; /* Golden stars */
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.feedback-text {
+  font-style: italic;
+  color: #ddd6fe;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.user-name {
+  color: var(--accent-purple);
+  font-weight: 600;
+}
+
+.science-section {
+    padding: 100px 60px;
+    background: linear-gradient(180deg, transparent, rgba(138, 43, 226, 0.05));
+    text-align: center;
+}
+
+.science-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.science-grid .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(157, 78, 221, 0.2);
+    padding: 30px;
+    border-radius: 20px;
+    transition: 0.3s;
+}
+
+.science-grid .glass-card:hover {
+    border-color: var(--accent-purple);
+    background: rgba(157, 78, 221, 0.05);
+}
+
+.science-grid h3 {
+    color: var(--accent-purple);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}

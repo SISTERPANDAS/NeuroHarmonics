@@ -21,7 +21,14 @@ app.register_blueprint(admin)
 
 @app.route("/")
 def home():
-    return render_template("index/index.html")
+    # Multi-level sort: 1. Highest Rating, 2. Newest (by ID)
+    feedbacks = db.session.query(Feedback, User.username)\
+                  .join(User, Feedback.user_id == User.id)\
+                  .filter(Feedback.rating >= 4)\
+                  .order_by(Feedback.rating.desc(), Feedback.id.desc())\
+                  .limit(15).all() 
+    
+    return render_template("index/index.html", feedbacks=feedbacks)
 
 @app.route("/login", methods=["GET"])
 def login_page():

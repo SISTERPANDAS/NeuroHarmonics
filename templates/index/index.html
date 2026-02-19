@@ -77,7 +77,49 @@
   </div>
 </section>
 
+<section class="testimonials reveal">
+  <h2 class="section-title">Verified <span>User Experiences</span></h2>
+  
+  <div class="testimonial-wrapper">
+    <div class="testimonial-slider" id="testimonialSlider">
+      {% for fb, uname in feedbacks %}
+      <div class="testimonial-card">
+        <div class="rating">
+          {% for _ in range(fb.rating) %}⭐{% endfor %}
+        </div>
+        <p class="feedback-text">"{{ fb.comment }}"</p>
+        <h4 class="user-name">- {{ uname }}</h4>
+      </div>
+      {% endfor %}
+    </div>
 
+    <button class="scroll-arrow" onclick="slideRight()">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+</section>
+
+<section class="science-section reveal">
+  <div class="science-content">
+    <h2>The Science Behind <span>the Soul</span></h2>
+    <p class="hero-description">NeuroHarmonics isn't just an app; it's a research-backed ecosystem built on established psychological frameworks.</p>
+    
+    <div class="science-grid">
+      <div class="glass-card">
+        <h3>PERMA Model</h3>
+        <p>We measure well-being through Positive Emotions, Engagement, Relationships, Meaning, and Accomplishment.</p>
+      </div>
+      <div class="glass-card">
+        <h3>Broaden-and-Build</h3>
+        <p>Our tools help you build long-term personal resources like resilience and creativity through positive affect tracking.</p>
+      </div>
+      <div class="glass-card">
+        <h3>EEG Integrity</h3>
+        <p>Data is processed using encrypted pipelines to ensure your neural patterns remain your own.</p>
+      </div>
+    </div>
+  </div>
+</section>
  
   </main>
 
