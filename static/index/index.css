@@ -15,6 +15,7 @@ body {
   overflow-x: hidden;
 }
 
+
 /* =========================
    Navbar
 ========================= */
@@ -36,7 +37,7 @@ body {
   color: #fff;
 }
 
-.nav-link, .get-started {
+.nav-link {
   text-decoration: none !important;
   background: linear-gradient(135deg, #a855f7, #7c3aed);
   border: none;
@@ -48,18 +49,35 @@ body {
   transition: 0.3s ease;
 }
 
-.nav-link:hover, .get-started:hover {
+.nav-link:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 0 18px #a855f7;
+}
+
+.get-started {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.get-started:hover {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 0 0 18px #a855f7;
 }
 
 /* =========================
-   Hero & Features
+   Hero Section
 ========================= */
 .hero {
   text-align: center;
   padding: 80px 20px 60px;
 }
+
 
 .badge {
   display: inline-block;
@@ -87,6 +105,9 @@ body {
   line-height: 1.6;
 }
 
+/* =========================
+   Features
+========================= */
 .features {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -108,75 +129,46 @@ body {
   box-shadow: 0 0 28px rgba(168, 85, 247, 0.55);
 }
 
-/* =========================
-   Split Layout (Professional Gap Fix)
-========================= */
-.split-container {
-  display: flex;
-  min-height: 100vh;
-  gap: 30px; /* This creates the physical gap between sections */
-  padding: 20px;
-  background: transparent;
+.feature-card .icon {
+  font-size: 2rem;
+  margin-bottom: 14px;
 }
 
-/* Left Section - Independently Scrollable */
-.left-section {
-  flex: 45;
-  padding: 60px;
-  background: rgba(20, 10, 40, 0.4);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(168, 85, 247, 0.2);
-  border-radius: 20px;
+.feature-card h3 {
+  margin-bottom: 8px;
+  color: #ddd6fe;
+}
+
+.feature-card p {
+  font-size: 0.95rem;
+  color: #b8b2ff;
+  line-height: 1.5;
+}
+
+/* =========================
+   Auth Container
+========================= */
+.container {
+  padding: 60px 20px 80px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  z-index: 2;
+  align-items: center;
 }
 
-/* Right Section - Stationary Video */
-.right-section {
-  flex: 55;
-  position: sticky; /* Keeps it in view while parent container is tall */
-  top: 20px;
-  height: calc(100vh - 40px);
-  border-radius: 20px;
-  overflow: hidden;
-  z-index: 1;
-  box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
+.container h1 {
+  font-size: 2rem;
+  color: #e9d5ff;
 }
 
-.right-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(to right, rgba(12, 8, 26, 0.8) 0%, transparent 20%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-.right-section video {
-  width: 100%;
-  height: 100%;
-  opacity: 0.8;
-  object-fit: cover;
-}
-
-.video-overlay {
-  position: absolute;
-  top: 10%;
-  left: 50%;
-  transform: translateX(-50%);
+.subtitle {
+  margin-top: 8px;
+  margin-bottom: 30px;
+  color: #c4b5fd;
   text-align: center;
-  color: white;
-  z-index: 2;
-  width: 90%;
 }
 
 /* =========================
-   Auth Card & Forms
+   Auth Card
 ========================= */
 .auth-card {
   background: #140c2f;
@@ -184,10 +176,12 @@ body {
   max-width: 420px;
   padding: 30px;
   border-radius: 18px;
-  box-shadow: 0 15px 40px rgba(124, 58, 237, 0.35);
-  margin: 0 auto;
+ box-shadow: 0 0 30px rgba(124, 58, 237, 0.15);
 }
 
+/* =========================
+   Tabs
+========================= */
 .tabs {
   display: flex;
   gap: 10px;
@@ -205,10 +199,29 @@ body {
   transition: 0.3s ease;
 }
 
+.tab:hover {
+  background: rgba(168, 85, 247, 0.15);
+}
+
 .tab.active {
   background: #7c3aed;
   color: #fff;
   box-shadow: 0 0 14px #7c3aed;
+}
+
+/* =========================
+   Forms
+========================= */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+.form label {
+  font-size: 0.85rem;
+  color: #c4b5fd;
 }
 
 .form input {
@@ -219,7 +232,6 @@ body {
   color: #fff;
   outline: none;
   transition: 0.3s ease;
-  width: 100%;
 }
 
 .form input:focus {
@@ -228,101 +240,255 @@ body {
   background: rgba(168, 85, 247, 0.05);
 }
 
+.hidden {
+  display: none;
+}
+
 /* =========================
    Buttons
 ========================= */
-.primary-btn, .admin-btn, .viewer-btn {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #a855f7;
-  background: transparent;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s ease;
-  margin-top: 10px;
-}
 
 .primary-btn {
-  background: linear-gradient(135deg, #57309c, #a855f7);
-  border: none;
-}
 
-.primary-btn:hover, .admin-btn:hover, .viewer-btn:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
-  background: rgba(168, 85, 247, 0.1);
-}
+  margin-top: 14px;
 
-.back-btn {
-  position: fixed;
-  top: 40px;
-  left: 40px;
-  text-decoration: none;
-  padding: 10px 16px;
+  padding: 12px;
+
   border-radius: 12px;
+
+  border: none;
+
+  background: linear-gradient(135deg, #57309c, #a855f7);
+
+  color: #fff;
+
   font-weight: 600;
+
+  cursor: pointer;
+
+  transition: 0.3s ease;
+
+}
+
+
+
+.primary-btn:hover {
+
+  transform: translateY(-2px) scale(1.03);
+
+  box-shadow: 0 0 10px #401a63;
+
+}
+
+
+
+.divider {
+
+  text-align: center;
+
+  margin: 18px 0;
+
+  color: #a78bfa;
+
+  font-size: 0.85rem;
+
+}
+
+
+
+.viewer-btn {
+
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid #a855f7;
+  border-radius: 12px;
   color: #e9d5ff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+
+
+.viewer-btn:hover {
   background: rgba(168, 85, 247, 0.15);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
-  transition: 0.3s;
-}
-
-.back-btn:hover {
-  background: #7c3aed;
-  transform: translateX(-4px);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
 }
 
 /* =========================
-   Responsive Logic
+   Responsive
 ========================= */
-@media (max-width: 1024px) {
-  .split-container {
-    flex-direction: column;
-    padding: 10px;
-    gap: 20px;
-  }
-  
-  .left-section, .right-section {
-    flex: none;
-    width: 100%;
+@media (max-width: 768px) {
+  .features {
+    padding: 30px 20px;
   }
 
-  .right-section {
-    position: relative;
-    top: 0;
-    height: 350px;
-  }
-
-  .left-section {
-    padding: 40px 20px;
+  .hero-title {
+    font-size: 2.3rem;
   }
 }
+
 
 /* =========================
-   Background Elements
+   Scroll Animations
 ========================= */
-#neural-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(circle at top, #1b103f, #0c081a);
-}
 
-/* Scroll Animations */
+/* Hidden state */
 .reveal {
   opacity: 0;
   transform: translateY(40px);
   transition: all 0.8s ease;
 }
 
+/* Visible state */
 .reveal.active {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Stagger animation for cards */
+.feature-card {
+  transition-delay: 0.1s;
+}
+
+.feature-card:nth-child(2) { transition-delay: 0.2s; }
+.feature-card:nth-child(3) { transition-delay: 0.3s; }
+.feature-card:nth-child(4) { transition-delay: 0.4s; }
+
+/* =========================
+   Back Button
+========================= */
+.back-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  text-decoration: none;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #e9d5ff;
+  background: rgba(168, 85, 247, 0.15);
+  backdrop-filter: blur(6px);
+  transition: 0.3s ease;
+  z-index: 1000;
+}
+
+/* Hover Effect */
+.back-btn:hover {
+  background: #7c3aed;
+  color: #fff;
+  box-shadow: 0 0 14px rgba(168, 85, 247, 0.6);
+  transform: translateX(-4px);
+}
+
+/* Split Layout */
+.split-container {
+  display: flex;
+  min-height: 100vh;
+  justify-content: space-between; /* Creates the gap between the two flex items */
+  background: transparent;
+}
+
+/* Left Section */
+.left-section {
+  width: 45%;
+  padding: 60px;
+  background: rgba(20, 10, 40, 0.2); /* More transparent */
+  backdrop-filter: blur(10px);      /* Glass effect */
+  border-right: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 0 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  z-index: 2;
+  overflow-y: visible;
+}
+
+/* Right Section (Video) */
+.right-section {
+  position: relative; /* Changed from fixed */
+  flex: 1;            /* Takes up the remaining 55% of the screen */
+  height: 100vh;
+  width: 52%;
+  overflow: hidden;
+}
+
+.right-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(12, 8, 26, 1) 0%, transparent 20%);
+  z-index: 2; /* Sits above video but below text */
+  pointer-events: none;
+}
+
+.right-section video {
+  width: 100%;
+  height: 100%;
+  opacity: 0.8; /* Change this number to adjust transparency */
+  transition: opacity 0.5s ease; /* Optional: Makes the change smooth if it loads in */
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 10%;           /* Moves it near the top */
+  left: 50%;
+  transform: translateX(-50%); /* Only centers horizontally */
+  text-align: center;
+  color: white;
+  z-index: 2;
+  width: 90%;         /* Optional: Ensures text doesn't hit edges on mobile */
+}
+
+/* Admin Button */
+.admin-btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid #a855f7;
+  border-radius: 12px;
+  color: #e9d5ff;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.admin-btn:hover {
+  background: rgba(168, 85, 247, 0.15);
+  box-shadow: 0 0 12px rgba(168, 85, 247, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .split-container {
+    flex-direction: column;
+  }
+
+  .left-section,
+  .right-section {
+    width: 100%;
+  }
+
+  .right-section {
+    height: 250px;
+  }
+}
+
+
+
+#neural-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;      
+  pointer-events: none;
+  background: radial-gradient(circle at top, #1b103f, #0c081a);
 }
