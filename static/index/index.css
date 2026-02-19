@@ -388,6 +388,8 @@ body {
   min-height: 100vh;
   justify-content: space-between; /* Creates the gap between the two flex items */
   background: transparent;
+  align-items: flex-start;
+  gap: 30px;
 }
 
 /* Left Section */
@@ -409,9 +411,12 @@ body {
 
 /* Right Section (Video) */
 .right-section {
-  position: relative; /* Changed from fixed */
-  flex: 1;            /* Takes up the remaining 55% of the screen */
-  height: 100vh;
+  position: fixed; /* Changed from fixed */
+   /*flex: 1;            Takes up the remaining 55% of the screen */
+  top: 0;
+  right: 0;
+  z-index: 1;
+   height: 100vh;
   width: 52%;
   overflow: hidden;
 }
