@@ -32,7 +32,26 @@ def register():
         traceback.print_exc()   # ← DO NOT REMOVE
         return jsonify({"success": False, "error": "Server error"}), 500
 
+@auth.route("/admin-login-page")
+def admin_login_page():
+    # Make sure 'admin_login.html' is inside your 'templates/index/' folder
+    return render_template("index/admin_login.html")
 
+
+@auth.route('/admin-login', methods=['POST'])
+def admin_login():
+    data = request.get_json()
+    # Query the 'admins' table instead of 'users'
+    admin = Admin.query.filter_by(username=data.get('username')).first()
+
+    if admin and admin.password == data.get('password'):  # Note: Use hashing in production
+        session['username'] = admin.username
+        session['admin_id'] = admin.admin_id
+        session['role'] = 'admin'
+        
+        return jsonify({"success": True, "redirect": url_for('admin_panel')})
+    
+    return jsonify({"success": False, "message": "Invalid Admin Credentials"}), 401
 
 @auth.route("/login", methods=["POST"])
 def login():

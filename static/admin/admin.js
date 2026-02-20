@@ -1,44 +1,39 @@
-function show(id) {
-    document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+function show(sectionId) {
+    // Hide all sections
+    document.querySelectorAll('main section').forEach(sec => {
+        sec.classList.remove('active');
+    });
+    // Show the selected section
+    document.getElementById(sectionId).classList.add('active');
+    
+    // Update sidebar button styles
+    document.querySelectorAll('aside button').forEach(btn => {
+        btn.classList.remove('btn-active');
+    });
+    event.currentTarget.classList.add('btn-active');
 }
 
-fetch("/admin/stats")
-.then(r => r.json())
-.then(d => {
-    usersCount.innerText = "Users: " + d.users;
-    uploadsCount.innerText = "Uploads: " + d.uploads;
-    alertsCount.innerText = "Alerts: " + d.alerts;
-});
+// 3D Visualization for Dashboard
+const container = document.getElementById('three-performance-container');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+// (Insert the Three.js animate logic here to visualize server load)
 
-fetch("/admin/users")
-.then(r => r.json())
-.then(users => {
-    userTable.innerHTML = users.map(u =>
-        `<tr>
-            <td>${u.id}</td>
-            <td>${u.name}</td>
-            <td>${u.role}</td>
-            <td>${u.status}</td>
-        </tr>`
-    ).join("");
-});
+async function loginAsAdmin() {
+    const username = prompt("Enter Admin Username:");
+    const password = prompt("Enter Admin Password:");
 
-fetch("/admin/logs")
-.then(r => r.json())
-.then(logs => {
-    logList.innerHTML = logs.map(l =>
-        `<li>[${l.level}] ${l.message} - ${l.time}</li>`
-    ).join("");
-});
+    const response = await fetch('/admin-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
 
-function saveRecommendation() {
-    fetch("/admin/recommendations", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({
-            emotion: emotion.value,
-            content: content.value
-        })
-    }).then(() => alert("Saved"));
+    const result = await response.json();
+    if (result.success) {
+        window.location.href = result.redirect;
+    } else {
+        alert("Access Denied: Admin not found.");
+    }
 }

@@ -55,3 +55,20 @@ class CommunityMessage(db.Model):
     username = db.Column(db.String(100), nullable=False) # Store name for display
     content = db.Column(db.Text, nullable=False)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+from datetime import datetime
+
+class Admin(db.Model):
+    __tablename__ = 'admin' # Ensure this matches your small 'a' table name
+    
+    admin_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    phone = db.Column(db.String(20), unique=True)
+    password = db.Column(db.String(200), nullable=False)
+    role = db.Column(db.String(20), default='admin')
+    
+    # Matching the TIMESTAMP columns in Supabase
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login = db.Column(db.DateTime)

@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, session, request, url_for, flash, jsonify
-from models import db, Feedback, ContactMessage, User, CommunityMessage # Added CommunityMessage
+from models import db, Feedback, ContactMessage, User, CommunityMessage, Admin # Added CommunityMessage
 from auth_routes import auth
 from admin_routes import admin 
 from datetime import datetime
@@ -54,8 +54,19 @@ def dashboard():
                            community_messages=messages)
 
 @app.route("/admin")
-def admin_page():
-    return render_template("admin/admin.html")
+def admin_panel():
+    if session.get("role") != "admin": # Security Check
+        return redirect(url_for("login_page"))
+        
+    users = User.query.all()
+    users_count = User.query.count()
+    messages = ContactMessage.query.filter_by(is_resolved=False).all()
+    # analysis_count = EEGData.query.count() 
+
+    return render_template("admin/admin_login.html", 
+                           users=users, 
+                           users_count=users_count,
+                           messages=messages)
 
 @app.route("/health-tips")
 def health_tips():
@@ -112,6 +123,30 @@ def send_message():
     db.session.commit()
     return jsonify({"success": True})
 
+# 1. Route to serve the dedicated admin login page
+@app.route("/admin-login-page")
+def admin_login_page():
+    return render_template("index/admin_login.html")
+
+# 2. Route to process the credentials against the 'admins' table
+from datetime import datetime
+
+@app.route('/admin-login', methods=['POST'])
+def admin_login_process():
+    data = request.get_json()
+    admin_user = Admin.query.filter_by(username=data.get('username')).first()
+
+    if admin_user and admin_user.password == data.get('password'):
+        # Update the last_login timestamp in Supabase
+        admin_user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        session['username'] = admin_user.username
+        session['role'] = 'admin'
+        return jsonify({"success": True, "redirect": url_for('admin_page')})
+    
+    return jsonify({"success": False, "message": "Invalid Credentials"}), 401
+
 @app.route('/post-community', methods=['POST'])
 def post_community():
     data = request.get_json()
@@ -124,6 +159,15 @@ def post_community():
         db.session.commit()
         return jsonify({"success": True})
     return jsonify({"error": "Unauthorized"}), 401
+
+@app.route('/admin-dashboard')
+def admin_dashboard_view():
+    # Security: Ensure only logged-in admins can see this
+    if session.get('role') != 'admin':
+        return redirect(url_for('login_page'))
+        
+    # For now, just render the template
+    return render_template("admin/admin_login.html")
 
 if __name__ == "__main__":
     with app.app_context():
