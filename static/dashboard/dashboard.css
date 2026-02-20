@@ -177,3 +177,31 @@ body.portal-body {
 .sign-out-btn:active {
     transform: translateY(0);
 }
+
+.message-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-left: 4px solid #7c3aed; /* NeuroHarmonics Purple */
+}
+
+.admin-response {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(124, 58, 237, 0.1);
+    border-radius: 8px;
+}
+
+.admin-badge {
+    color: #a855f7;
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.pending-status {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}

@@ -37,3 +37,37 @@ async function loginAsAdmin() {
         alert("Access Denied: Admin not found.");
     }
 }
+
+// Function to save new AI recommendations
+async function saveRecommendation() {
+    const emotion = document.getElementById('emotion').value;
+    const tipContent = document.getElementById('content').value;
+
+    if (!tipContent) {
+        alert("Please enter a tip before saving.");
+        return;
+    }
+
+    const response = await fetch('/update-wellness-logic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            emotion: emotion,
+            tip: tipContent
+        })
+    });
+
+    const result = await response.json();
+    if (result.success) {
+        alert("Supabase Updated: Logic for " + emotion + " is now live.");
+        document.getElementById('content').value = ''; // Clear textarea
+    } else {
+        alert("Error updating logic: " + result.message);
+    }
+}
+
+// Function to handle tab switching (if you add tabs later)
+function showSection(sectionId) {
+    document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+}

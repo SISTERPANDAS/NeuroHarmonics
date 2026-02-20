@@ -2,8 +2,9 @@
 <html>
 <head>
     <title>Admin | NeuroHarmonics</title>
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin/admin.css') }}">
 </head>
+
 <body>
 
 <main>
@@ -66,6 +67,6 @@
     </section>
 </main>
 
-<script src="admin.js"></script>
+<script src="{{ url_for('static', filename='admin/admin.js') }}"></script>
 </body>
 </html>

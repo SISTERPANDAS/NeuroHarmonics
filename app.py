@@ -38,32 +38,37 @@ def login_page():
 def register_page():
     return render_template("index/login.html")
 
-# MERGED DASHBOARD ROUTE (Fixed the duplicate error)
 @app.route("/dashboard")
 def dashboard():
     if "username" not in session:
         return redirect("/login")
     
-    user_name = session.get("username", "Guest User")
+    # 1. Get the current user object
+    user = User.query.filter_by(username=session['username']).first()
     
-    # Fetch Community Messages for the chat tab
+    # 2. Fetch Community Messages (existing logic)
     messages = CommunityMessage.query.order_by(CommunityMessage.timestamp.asc()).limit(50).all()
     
+    # 3. Fetch private inquiries sent by this user that have an admin reply
+    # This assumes you added 'admin_reply' to your ContactMessage model
+    personal_inquiries = ContactMessage.query.filter_by(user_id=user.id).all()
+    
     return render_template("dashboard/dashboard.html", 
-                           username=user_name, 
-                           community_messages=messages)
+                           username=user.username, 
+                           community_messages=messages,
+                           inquiries=personal_inquiries) # Passing new data here
 
 @app.route("/admin")
 def admin_panel():
     if session.get("role") != "admin": # Security Check
-        return redirect(url_for("login_page"))
+        return redirect(url_for("admin_login_page"))
         
     users = User.query.all()
     users_count = User.query.count()
     messages = ContactMessage.query.filter_by(is_resolved=False).all()
     # analysis_count = EEGData.query.count() 
 
-    return render_template("admin/admin_login.html", 
+    return render_template("admin/admin.html", 
                            users=users, 
                            users_count=users_count,
                            messages=messages)
@@ -134,18 +139,27 @@ from datetime import datetime
 @app.route('/admin-login', methods=['POST'])
 def admin_login_process():
     data = request.get_json()
-    admin_user = Admin.query.filter_by(username=data.get('username')).first()
+    u_input = data.get('username').strip() # .strip() removes accidental spaces
+    p_input = data.get('password').strip()
 
-    if admin_user and admin_user.password == data.get('password'):
-        # Update the last_login timestamp in Supabase
-        admin_user.last_login = datetime.utcnow()
-        db.session.commit()
+    # Query the 'admins' table
+    admin_user = Admin.query.filter_by(username=u_input).first()
 
-        session['username'] = admin_user.username
-        session['role'] = 'admin'
-        return jsonify({"success": True, "redirect": url_for('admin_page')})
+    if admin_user:
+        # Debugging: These will appear in your VS Code / CMD terminal
+        print(f"Comparing Input: [{p_input}] with DB: [{admin_user.password}]")
+        
+        if admin_user.password == p_input:
+            admin_user.last_login = datetime.utcnow()
+            db.session.commit()
+            
+            session['username'] = admin_user.username
+            session['role'] = 'admin'
+            return jsonify({"success": True, "redirect": url_for('admin_panel')})
+        else:
+            return jsonify({"success": False, "message": "Password mismatch"}), 401
     
-    return jsonify({"success": False, "message": "Invalid Credentials"}), 401
+    return jsonify({"success": False, "message": "Admin user not found"}), 401
 
 @app.route('/post-community', methods=['POST'])
 def post_community():
@@ -168,6 +182,24 @@ def admin_dashboard_view():
         
     # For now, just render the template
     return render_template("admin/admin_login.html")
+
+@app.route('/admin/reply-message', methods=['POST'])
+def reply_message():
+    if session.get('role') != 'admin':
+        return jsonify({"success": False, "message": "Unauthorized"}), 403
+
+    data = request.get_json()
+    msg_id = data.get('id')
+    reply_text = data.get('reply')
+
+    message = ContactMessage.query.get(msg_id)
+    if message:
+        message.admin_reply = reply_text
+        message.is_resolved = True  # Mark as resolved so it clears from dashboard
+        db.session.commit()
+        return jsonify({"success": True})
+    
+    return jsonify({"success": False, "message": "Message not found"}), 404
 
 if __name__ == "__main__":
     with app.app_context():

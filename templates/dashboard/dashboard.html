@@ -47,6 +47,28 @@
                 <i class="fas fa-sign-out-alt"></i> Sign Out
             </a>
         </div>
+        <div class="inbox-container">
+    <h2>Admin Support Inbox</h2>
+    
+    {% for inquiry in inquiries %}
+        <div class="message-card">
+            <div class="user-query">
+                <strong>You asked:</strong> {{ inquiry.message }}
+            </div>
+            
+            {% if inquiry.admin_reply %}
+            <div class="admin-response">
+                <span class="admin-badge">Admin Reply:</span>
+                <p>{{ inquiry.admin_reply }}</p>
+            </div>
+            {% else %}
+            <div class="pending-status">
+                <em>Waiting for admin review...</em>
+            </div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
     </aside>
 
     <main class="main-content">
@@ -132,7 +154,7 @@
             <button class="send-btn" onclick="postToCommunity()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
-</section>
+    </section>
 
     </main>
 
