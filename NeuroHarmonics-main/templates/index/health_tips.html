@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mental Wellness Tips | NeuroHarmonics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='index/tips.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='index/tips_video_cards.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<div class="video-background">
+  <video autoplay muted loop playsinline poster="https://res.cloudinary.com/dkjp9svlj/image/upload/f_auto,q_auto/v1771333699/wellness2_1_exbinw.jpg">
+    <source src="https://res.cloudinary.com/dkjp9svlj/video/upload/so_0,eo_5,w_1280,f_auto,q_auto/v1771333699/wellness2_1_exbinw.mp4" type="video/mp4">
+</div>
+
+<header class="navbar glass">
+    <div class="logo">🧠 <span>NeuroHarmonics</span></div>
+    <nav class="nav-links">
+      <a href="{{ url_for('home') }}">← Back</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="get-started" onclick="showLogin()">Get Started</button>
+    </div>
+  </header>
+
+  <main class="tips-hero">
+      <h1 class="hero-title">Mental Wellness <span>Tips</span></h1>
+      <p class="subtitle">Science-backed strategies to optimize your brain health.</p>
+      <section class="video-recommendations-section reveal">
+        <h2 class="section-title">Personalized <span>Video Recommendations</span></h2>
+        <div class="video-recommendations-container"></div>
+      </section>
+      <!-- Modal for video playback -->
+      <div id="video-modal" class="video-modal" style="display:none;">
+        <div class="video-modal-content">
+          <span class="video-modal-close" id="video-modal-close">&times;</span>
+          <video id="modal-video" controls style="width:100%;border-radius:18px;box-shadow:0 0 24px #a855f7;"></video>
+        </div>
+      </div>
+  </main>
+
+  <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
+  <script src="{{ url_for('static', filename='index/tips_video_cards.js') }}"></script>
+  <script src="{{ url_for('static', filename='index/script.js') }}"></script>
+
+</body>
+</html>
