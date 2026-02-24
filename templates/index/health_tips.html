@@ -24,66 +24,95 @@
     </div>
   </header>
 
+
   <main class="tips-hero">
     <h1 class="hero-title">Mental Wellness <span>Tips</span></h1>
     <p class="subtitle">Science-backed strategies to optimize your brain health.</p>
 
-    <div class="tips-grid">
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box yellow"><i class="fas fa-coffee"></i></div>
-          <span class="label">FOCUS</span>
+    <div class="video-gallery-grid">
+      {% for v in videos %}
+      <div class="video-card">
+        <div class="video-thumb-container">
+          <img class="video-thumb" src="{{ url_for('static', filename='dashboard/video_thumbs/' + v.thumb) }}" alt="{{ v.title }} thumbnail">
+          <button class="play-btn" onclick="playVideo('{{ url_for('static', filename='videos/' + v.video) }}', '{{ v.title }}')">
+            <i class="fas fa-play"></i>
+          </button>
         </div>
-        <h3>The Pomodoro Technique</h3>
-        <p>Work for 25 minutes, then take a 5-minute break. This keeps your brain fresh and focused.</p>
+        <div class="video-title">{{ v.title }}</div>
+        <div class="video-quote">“{{ v.quote }}”</div>
+        <div class="video-tip">{{ v.tip }}</div>
       </div>
+      {% endfor %}
+    </div>
 
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box blue"><i class="fas fa-music"></i></div>
-          <span class="label">STRESS RELIEF</span>
-        </div>
-        <h3>Binaural Beats</h3>
-        <p>Listen to 40Hz binaural beats to naturally induce a state of concentration and calm.</p>
-      </div>
-
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box orange"><i class="fas fa-sun"></i></div>
-          <span class="label">MORNING ROUTINE</span>
-        </div>
-        <h3>Natural Light Exposure</h3>
-        <p>Get 10 minutes of sunlight within an hour of waking up to regulate your circadian rhythm.</p>
-      </div>
-
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box purple"><i class="fas fa-moon"></i></div>
-          <span class="label">SLEEP HYGIENE</span>
-        </div>
-        <h3>Digital Sunset</h3>
-        <p>Turn off all screens 1 hour before bed to improve melatonin production.</p>
-      </div>
-
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box green"><i class="fas fa-book-open"></i></div>
-          <span class="label">MINDFULNESS</span>
-        </div>
-        <h3>Box Breathing</h3>
-        <p>Inhale for 4s, hold for 4s, exhale for 4s, hold for 4s. Repeat 4 times.</p>
-      </div>
-
-      <div class="tip-card reveal">
-        <div class="card-header">
-          <div class="icon-box pink"><i class="fas fa-smile"></i></div>
-          <span class="label">POSITIVITY</span>
-        </div>
-        <h3>Gratitude Journaling</h3>
-        <p>Write down 3 things you are grateful for every morning to boost mood.</p>
+    <!-- Modal for video playback -->
+    <div id="videoModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle"></h2>
+        <video id="modalVideo" controls autoplay></video>
       </div>
     </div>
+
+    <!-- Three.js canvas for visual effect -->
+    <div id="threejs-bg"></div>
   </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Video modal logic
+    function playVideo(src, title) {
+      document.getElementById('modalVideo').src = src;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('videoModal').style.display = 'block';
+    }
+    function closeModal() {
+      document.getElementById('videoModal').style.display = 'none';
+      document.getElementById('modalVideo').pause();
+      document.getElementById('modalVideo').src = '';
+    }
+    window.onclick = function(event) {
+      var modal = document.getElementById('videoModal');
+      if (event.target == modal) closeModal();
+    }
+
+    // Subtle Three.js animated background (particles)
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('threejs-bg').appendChild(renderer.domElement);
+    camera.position.z = 8;
+    // Create particles
+    let particles = new THREE.Group();
+    let particleMaterial = new THREE.MeshBasicMaterial({ color: 0xa855f7, transparent: true, opacity: 0.25 });
+    for (let i = 0; i < 80; i++) {
+      let geo = new THREE.SphereGeometry(Math.random() * 0.18 + 0.08, 12, 12);
+      let mesh = new THREE.Mesh(geo, particleMaterial.clone());
+      mesh.position.set(
+        (Math.random() - 0.5) * 16,
+        (Math.random() - 0.5) * 10,
+        (Math.random() - 0.5) * 8
+      );
+      mesh.material.opacity = Math.random() * 0.18 + 0.08;
+      particles.add(mesh);
+    }
+    scene.add(particles);
+    function animate() {
+      requestAnimationFrame(animate);
+      particles.rotation.y += 0.0008;
+      particles.rotation.x += 0.0003;
+      renderer.render(scene, camera);
+    }
+    animate();
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+  <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
+  <script src="{{ url_for('static', filename='index/script.js') }}"></script>
 
   <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
   <script src="{{ url_for('static', filename='index/script.js') }}"></script>
