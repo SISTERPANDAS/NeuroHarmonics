@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroHarmonics | User Portal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="portal-body">
+    <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%); z-index: -1;"></div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2 class="logo-text">Neuro<span>Harmonics</span></h2>
+            <p class="sub-text">USER PORTAL</p>
+        </div>
+
+        <nav class="nav-menu">
+            <button class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </button>
+            <button class="nav-item" onclick="showSection('live-analysis')">
+                <i class="fas fa-brain"></i> Live Analysis
+            </button>
+            <button class="nav-item" onclick="showSection('community')">
+                <i class="fas fa-comment-alt"></i> Community
+            </button>
+            <button class="nav-item" onclick="showSection('support')">
+                <i class="fas fa-headset"></i> Support & Feedback
+            </button>
+            <button class="nav-item" onclick="showSection('recommendations')">
+                <i class="fas fa-star"></i> Recommendations
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="avatar">
+                    {{ session.get('username', 'U')[0].upper() }}
+                </div>
+                <div class="user-info">
+                    <span class="user-name">{{ session.get('username', 'Guest User') }}</span>
+                    <span class="user-role">User</span>
+                </div>
+            </div>
+            <a href="/logout" class="sign-out-btn">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        
+        <section id="dashboard" class="content-section">
+            <h1 class="welcome-text">Hello, <span>{{ session['username'] }}</span></h1>
+            <p class="subtitle">Here's your neural performance overview.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">Focus Score <i class="fas fa-bolt"></i></div>
+                    <div class="stat-value">78</div>
+                    <div class="stat-trend positive">↑ 12% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Calmness Level <i class="fas fa-wind"></i></div>
+                    <div class="stat-value">62</div>
+                    <div class="stat-trend negative">↓ 5% vs last week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">Stress Index <i class="fas fa-heartbeat"></i></div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-trend positive">↓ 8% vs last week</div>
+                </div>
+            </div>
+
+            <div class="chart-container glass">
+                <h3><i class="fas fa-brain"></i> Weekly Brainwave Trends</h3>
+                <div class="placeholder-chart"></div>
+            </div>
+        </section>
+
+        <section id="live-analysis" class="content-section" style="display:none;">
+            <h1>Face & Emotion Analysis</h1>
+            <p class="subtitle">Allow camera access to capture a frame for emotion detection.</p>
+            <div class="analysis-box glass">
+                <div class="face-scan-area">
+                    <video id="face-video" autoplay playsinline muted></video>
+                    <canvas id="face-canvas" style="display:none;"></canvas>
+                    <div id="face-placeholder" class="simulation-circle"><i class="fas fa-user"></i></div>
+                </div>
+                <div id="face-result" class="face-result" style="display:none;"></div>
+                <div class="face-actions">
+                    <button type="button" class="start-btn" id="btn-start-scan" onclick="startFaceScan()">Start camera</button>
+                    <button type="button" class="start-btn start-btn-secondary" id="btn-capture" onclick="captureAndAnalyze()" style="display:none;">Capture & analyze</button>
+                    <button type="button" class="start-btn start-btn-secondary" id="btn-stop-scan" onclick="stopFaceScan()" style="display:none;">Stop camera</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="support" class="content-section" style="display:none;">
+            <h1>Support & Feedback</h1>
+            <p class="subtitle">Help us improve the NeuroHarmonics experience.</p>
+
+            <div class="support-grid">
+                <div class="glass-card feedback-form">
+    <h3><i class="fas fa-star"></i> Rate Your Experience</h3>
+    <form onsubmit="submitFeedback(event)"> <div class="rating-group">
+            <label>Rating (1-5):</label>
+            <input type="number" name="rating" min="1" max="5" required>
+        </div>
+        <textarea name="comment" placeholder="Tell us what you think about the app..."></textarea>
+        <button type="submit" class="submit-btn">Send Feedback</button>
+    </form>
+</div>
+
+<div class="glass-card contact-form">
+    <h3><i class="fas fa-envelope"></i> Contact Support</h3>
+    <form onsubmit="sendSupportMessage(event)"> <input type="text" name="subject" placeholder="Subject" required>
+        <textarea name="message" placeholder="Describe your issue or question..." required></textarea>
+        <button type="submit" class="submit-btn">Send Message</button>
+    </form>
+</div>
+            </div>
+        </section>
+
+        <section id="community" class="content-section" style="display:none;">
+    <h1>Community Chat</h1>
+    <div class="chat-container glass">
+        <div class="chat-messages" id="chat-box">
+            {% for msg in community_messages %}
+                <div class="message">
+                    <span class="msg-user"><strong>{{ msg.username }}:</strong></span>
+                    <span class="msg-content">{{ msg.content }}</span>
+                    <small class="msg-time">{{ msg.timestamp.strftime('%H:%M') }}</small>
+                </div>
+            {% else %}
+                <div class="no-msg">No recent messages. Start the conversation!</div>
+            {% endfor %}
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="community-input" placeholder="Type a message...">
+            <button class="send-btn" onclick="postToCommunity()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</section>
+
+        <section id="recommendations" class="content-section" style="display:none;">
+            <h1>Recommendations</h1>
+            <p class="subtitle">Personalized quote, harmonic suggestion, and calming tip based on your mood.</p>
+            <div class="video-recommendations-container">
+                <!-- Video cards will be injected here by JS -->
+            </div>
+            <div class="glass-card rec-card">
+                <button type="button" class="start-btn" onclick="loadRecommendations()">Load recommendations</button>
+                <div id="rec-content" class="rec-content" style="display:none;">
+                    <p class="rec-quote" id="rec-quote"></p>
+                    <p class="rec-author" id="rec-author"></p>
+                    <p class="rec-harmonic"><strong>Harmonic:</strong> <span id="rec-harmonic"></span></p>
+                    <p class="rec-tip"><strong>Tip:</strong> <span id="rec-tip"></span></p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
+</body>
+</html>
