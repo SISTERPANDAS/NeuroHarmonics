@@ -1,3 +1,46 @@
+/* Emotion Detection Section */
+.face-emotion-section {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.face-btn, .capture-btn {
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.face-btn:hover, .capture-btn:hover {
+  background: #4c1d95;
+}
+#camera-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.emotion-result {
+  margin-top: 10px;
+  min-height: 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.emotion-result.show {
+  opacity: 1;
+}
+.emotion-label {
+  color: #6d28d9;
+}
+.emotion-accuracy {
+  color: #a855f7;
+}
 /* =========================
    Global Reset
 ========================= */

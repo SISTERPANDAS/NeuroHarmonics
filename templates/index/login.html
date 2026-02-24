@@ -36,6 +36,9 @@
         <label>Password</label>
         <input id="password"  type="password" placeholder="Enter your password" required />
 
+        <!-- Face Detection & Emotion Section -->
+
+
         <button type="button" class="primary-btn" onclick="login()">
           Sign In →
         </button>
@@ -60,7 +63,7 @@
 
       <div class="divider">OR</div>
 
-      <button class="viewer-btn" onclick="window.location.href='/viewer'">Continue as Viewer</button>
+      <button class="viewer-btn" onclick="window.location.href='{{ url_for('health_tips') }}'">Continue as Viewer</button>
 
       <div class="divider"></div>
 
@@ -90,6 +93,70 @@
 <script type="module" src="../../static/index/neural-bg.js"></script>
 <!-- Music Player Script -->
 <script src="../../static/music_player.js"></script>
+
+<script>
+// Face detection and emotion detection logic
+let stream = null;
+function startFaceDetection() {
+  const cameraContainer = document.getElementById('camera-container');
+  cameraContainer.style.display = 'block';
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(s => {
+      stream = s;
+      document.getElementById('camera').srcObject = stream;
+    })
+    .catch(err => {
+      alert('Camera access denied.');
+    });
+}
+
+function captureAndAnalyzeFace() {
+  const video = document.getElementById('camera');
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth || 180;
+  canvas.height = video.videoHeight || 140;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/png');
+
+  // Send image to backend for emotion detection
+  fetch('/api/face/analyze', {
+    method: 'POST',
+    body: createFormDataFromBase64(dataUrl),
+  })
+    .then(res => res.json())
+    .then(data => {
+      // Show emotion and accuracy
+      const resultDiv = document.getElementById('emotion-result');
+      if (data.emotion || data.dominantEmotion) {
+        resultDiv.innerHTML = `<span class="emotion-label">Emotion: ${data.emotion || data.dominantEmotion}</span><br><span class="emotion-accuracy">Accuracy: ${data.accuracy ? (data.accuracy*100).toFixed(2)+'%' : 'N/A'}</span>`;
+        resultDiv.classList.add('show');
+      } else {
+        resultDiv.innerHTML = 'No face detected.';
+        resultDiv.classList.remove('show');
+      }
+      // CSS effect
+      resultDiv.style.background = '#fff';
+      resultDiv.style.color = '#4c1d95';
+      resultDiv.style.borderRadius = '8px';
+      resultDiv.style.padding = '8px 12px';
+      resultDiv.style.boxShadow = '0 2px 8px #a855f7';
+    })
+    .catch(() => {
+      document.getElementById('emotion-result').innerHTML = 'Error analyzing face.';
+    });
+}
+
+function createFormDataFromBase64(dataUrl) {
+  // Convert base64 to Blob
+  const arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+  for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+  const blob = new Blob([u8arr], { type: mime });
+  const formData = new FormData();
+  formData.append('image', blob, 'face.png');
+  return formData;
+}
+</script>
 </body>
 </html>
 <!DOCTYPE html>
@@ -154,7 +221,7 @@
 
       <div class="divider">OR</div>
 
-      <button class="viewer-btn" onclick="window.location.href='/viewer'">Continue as Viewer</button>
+      <button class="viewer-btn" onclick="window.location.href='/health-tips'">Continue as Viewer</button>
 
       <div class="divider"></div>
 

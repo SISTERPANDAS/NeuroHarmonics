@@ -102,11 +102,80 @@
         </section>
 
         <section id="live-analysis" class="content-section" style="display:none;">
-            <h1>Live EEG Analysis</h1>
-            <div class="analysis-box glass">
-                <div class="simulation-circle"><i class="fas fa-microchip"></i></div>
-                <button class="start-btn">Start Simulation</button>
-            </div>
+                        <h1>Live Emotion Detection</h1>
+                        <div class="analysis-box glass">
+                                <div class="face-emotion-section">
+                                    <button type="button" class="face-btn" onclick="startFaceDetection()">Start Face Detection</button>
+                                    <div id="camera-container" style="display:none; margin-top:10px;">
+                                        <video id="camera" width="180" height="140" autoplay></video>
+                                        <button type="button" class="capture-btn" onclick="captureAndAnalyzeFace()">Capture & Analyze</button>
+                                    </div>
+                                    <div id="emotion-result" class="emotion-result"></div>
+                                </div>
+                        </div>
+                        <script>
+                        // Live face detection and emotion analysis for dashboard
+                        let stream = null;
+                        function startFaceDetection() {
+                            const cameraContainer = document.getElementById('camera-container');
+                            cameraContainer.style.display = 'block';
+                            navigator.mediaDevices.getUserMedia({ video: true })
+                                .then(s => {
+                                    stream = s;
+                                    document.getElementById('camera').srcObject = stream;
+                                })
+                                .catch(err => {
+                                    alert('Camera access denied.');
+                                });
+                        }
+
+                        function captureAndAnalyzeFace() {
+                            const video = document.getElementById('camera');
+                            const canvas = document.createElement('canvas');
+                            canvas.width = video.videoWidth || 180;
+                            canvas.height = video.videoHeight || 140;
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            const dataUrl = canvas.toDataURL('image/png');
+
+                            // Send image to backend for emotion detection
+                            fetch('/api/face/analyze', {
+                                method: 'POST',
+                                body: createFormDataFromBase64(dataUrl),
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    // Show emotion and accuracy
+                                    const resultDiv = document.getElementById('emotion-result');
+                                    if (data.emotion || data.dominantEmotion) {
+                                        resultDiv.innerHTML = `<span class="emotion-label">Emotion: ${data.emotion || data.dominantEmotion}</span><br><span class="emotion-accuracy">Accuracy: ${data.accuracy ? (data.accuracy*100).toFixed(2)+'%' : 'N/A'}</span>`;
+                                        resultDiv.classList.add('show');
+                                    } else {
+                                        resultDiv.innerHTML = 'No face detected.';
+                                        resultDiv.classList.remove('show');
+                                    }
+                                    // CSS effect
+                                    resultDiv.style.background = '#fff';
+                                    resultDiv.style.color = '#4c1d95';
+                                    resultDiv.style.borderRadius = '8px';
+                                    resultDiv.style.padding = '8px 12px';
+                                    resultDiv.style.boxShadow = '0 2px 8px #a855f7';
+                                })
+                                .catch(() => {
+                                    document.getElementById('emotion-result').innerHTML = 'Error analyzing face.';
+                                });
+                        }
+
+                        function createFormDataFromBase64(dataUrl) {
+                            // Convert base64 to Blob
+                            const arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                            for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
+                            const blob = new Blob([u8arr], { type: mime });
+                            const formData = new FormData();
+                            formData.append('image', blob, 'face.png');
+                            return formData;
+                        }
+                        </script>
         </section>
 
         <section id="support" class="content-section" style="display:none;">

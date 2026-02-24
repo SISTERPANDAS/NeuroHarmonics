@@ -1,3 +1,17 @@
+/* Move navbar actions higher */
+.navbar .nav-actions {
+  position: absolute;
+  top: 18px;
+  right: 32px;
+}
+.navbar .nav-links {
+  position: absolute;
+  top: 18px;
+  left: 32px;
+}
+.navbar {
+  position: relative;
+}
 /* ================= YOGA SECTION ================= */
 .yoga-section {
   margin: 60px auto 0 auto;

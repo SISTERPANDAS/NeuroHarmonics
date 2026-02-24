@@ -58,26 +58,43 @@ def login():
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
+    image_data = data.get("face_image")  # base64 image from frontend
 
-    # 1. Fetch the user from Supabase
     user = User.query.filter_by(email=email).first()
-
-    # 2. Check credentials
     if not user or not check_password_hash(user.password, password):
         return jsonify({"success": False, "error": "Invalid email or password"}), 401
 
-    # 3. SET STATUS TO ACTIVE
     user.status = "active"
-    
     try:
-        db.session.commit() # Save the "active" status to the database
+        db.session.commit()
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": "Database error"}), 500
 
-    # 4. Set Session Data
     session["user_id"] = user.id
     session["username"] = user.username
     session["role"] = user.role
 
-    return jsonify({"success": True})
+    # Live emotion detection
+    emotion_result = None
+    accuracy = None
+    if image_data:
+        # Call emotion detection backend
+        import requests
+        res = requests.post("http://localhost:8000/predict", json={"image": image_data})
+        if res.status_code == 200:
+            result = res.json()
+            emotion_result = result.get("emotion")
+            accuracy = result.get("accuracy")
+            # Optionally log emotion
+            from models import EmotionLog
+            from datetime import datetime
+            log = EmotionLog(
+                user_id=user.id,
+                emotion=emotion_result,
+                timestamp=datetime.utcnow()
+            )
+            db.session.add(log)
+            db.session.commit()
+
+    return jsonify({"success": True, "emotion": emotion_result, "accuracy": accuracy})
