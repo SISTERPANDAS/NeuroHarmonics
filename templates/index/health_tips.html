@@ -29,6 +29,29 @@
     <h1 class="hero-title">Mental Wellness <span>Tips</span></h1>
     <p class="subtitle">Science-backed strategies to optimize your brain health.</p>
 
+    <!-- Music Recommendations Section -->
+    <div class="music-section">
+      <h2 class="section-title">{{ time_greeting }}! 🎵</h2>
+      <p class="section-subtitle">We've picked some perfect music for you based on the time of day</p>
+      <div class="video-gallery-grid">
+        {% for music in music_recommendations %}
+        <div class="video-card" onclick="playMusicCard('{{ url_for('static', filename='music/' + time_period + '/' + music.music_file) }}')">
+          <div class="video-thumb-container">
+            <img class="video-thumb" src="{{ url_for('static', filename='music_thumbnails/' + time_period + '/' + music.thumbnail) }}" alt="{{ music.title }} thumbnail">
+            <button class="play-btn">
+              <i class="fas fa-play"></i>
+            </button>
+          </div>
+          <div class="video-title">{{ music.title }}</div>
+          <div class="video-quote">"{{ music.quote }}"</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Hidden audio element for playing music -->
+    <audio id="recommendationAudio"></audio>
+
     <div class="video-gallery-grid">
       {% for v in videos %}
       <div class="video-card">
@@ -39,7 +62,7 @@
           </button>
         </div>
         <div class="video-title">{{ v.title }}</div>
-        <div class="video-quote">“{{ v.quote }}”</div>
+        <div class="video-quote">"{{ v.quote }}"</div>
         <div class="video-tip">{{ v.tip }}</div>
       </div>
       {% endfor %}
@@ -57,6 +80,20 @@
     <!-- Three.js canvas for visual effect -->
     <div id="threejs-bg"></div>
   </main>
+  <script src="{{ url_for('static', filename='music_player.js') }}"></script>
+  <script>
+    function playMusicCard(src) {
+      var audio = document.getElementById('recommendationAudio');
+      if(window.musicPlayer && window.musicPlayer.pause) window.musicPlayer.pause();
+      audio.src = src;
+      audio.play();
+      audio.onended = function() {
+        if(window.musicPlayer && window.musicPlayer.play) window.musicPlayer.play();
+      };
+    }
+  </script>
+</body>
+</html>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
@@ -111,9 +148,29 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
   </script>
-  <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
-  <script src="{{ url_for('static', filename='index/script.js') }}"></script>
-
+  
+  <script>
+    // Music card player logic
+    function playMusicCard(musicSrc) {
+      // Pause background music
+      if (window.musicPlayer && window.musicPlayer.pauseForOtherMusic) {
+        window.musicPlayer.pauseForOtherMusic();
+      }
+      
+      // Play the selected music
+      const audio = document.getElementById('recommendationAudio');
+      audio.src = musicSrc;
+      audio.play();
+    }
+    
+    function resumeBackgroundMusic() {
+      // Resume background music when recommendation music ends
+      if (window.musicPlayer && window.musicPlayer.resumeAfterOtherMusic) {
+        window.musicPlayer.resumeAfterOtherMusic();
+      }
+    }
+  </script>
+  
   <script src="{{ url_for('static', filename='index/tips.js') }}"></script>
   <script src="{{ url_for('static', filename='index/script.js') }}"></script>
 

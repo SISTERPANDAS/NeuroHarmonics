@@ -119,9 +119,63 @@ def health_tips():
         },
     ]
     videos = random.sample(all_videos, 4) if len(all_videos) >= 4 else all_videos
+    
+    # Time-based music recommendations
+    current_hour = datetime.now().hour
+    
+    # Determine time period: 4am-12pm = morning, 12pm-10pm = evening, 10pm-4am = night
+    if 4 <= current_hour < 12:
+        time_period = 'morning'
+        time_greeting = 'Good Morning'
+        quotes = [
+            'Rise and shine! Every morning is a new opportunity.',
+            'The early bird catches the worm - start your day with intention.',
+            'Morning is the wick, the day is the candle.',
+            'Today is a new day. Make it count!'
+        ]
+    elif 12 <= current_hour < 22:
+        time_period = 'evening'
+        time_greeting = 'Good Evening'
+        quotes = [
+            'The evening brings everything in moderation.',
+            'Every sunset is an opportunity to reset.',
+            'Evenings are for reflection and gratitude.',
+            'Finish strong - make the most of your evening!'
+        ]
+    else:
+        time_period = 'night'
+        time_greeting = 'Good Night'
+        quotes = [
+            'Sweet dreams are made of this.',
+            'Rest is not idleness, it is the key to wellness.',
+            'Tomorrow is a fresh start with new possibilities.',
+            'Peace comes from within - embrace the stillness.'
+        ]
+    
+    # Get 2 random music files from the appropriate folder
+    music_files = [
+        {'file': f'{time_period}1.mp3', 'thumb': f'{time_period}1.jpg'},
+        {'file': f'{time_period}2.mp3', 'thumb': f'{time_period}2.jpg'},
+        {'file': f'{time_period}3.mp3', 'thumb': f'{time_period}3.jpg'},
+        {'file': f'{time_period}4.mp3', 'thumb': f'{time_period}4.jpg'},
+    ]
+    
+    # Select 2 random music files
+    selected_music = random.sample(music_files, 2)
+    
+    # Add quotes to each music item
+    for i, music in enumerate(selected_music):
+        music['music_file'] = music['file']
+        music['thumbnail'] = music['thumb']
+        music['quote'] = quotes[i] if i < len(quotes) else quotes[0]
+        music['title'] = f'{time_period.title()} Music {i+1}'
+    
     return render_template(
         "index/health_tips.html",
-        videos=videos
+        videos=videos,
+        music_recommendations=selected_music,
+        time_greeting=time_greeting,
+        time_period=time_period
     )
 
 @app.route("/logout")
