@@ -28,6 +28,64 @@ body {
   box-shadow: 0 4px 20px rgba(124, 58, 237, 0.45);
 }
 
+.music-btn-container {
+  position: relative;
+  display: inline-block;
+}
+.music-btn-container button#music-btn {
+  background: #6d28d9;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.18);
+  transition: background 0.2s;
+}
+.music-btn-container button#music-btn:hover {
+  background: #4c1d95;
+}
+.music-panel {
+  position: absolute;
+  top: 45px;
+  right: 0;
+  background: #fff;
+  color: #4c1d95;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.18);
+  padding: 16px 18px;
+  min-width: 180px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  z-index: 9999;
+}
+.music-panel.open {
+  display: flex;
+}
+.music-panel button {
+  background: #6d28d9;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+.music-panel input[type="range"] {
+  width: 100px;
+  margin-bottom: 8px;
+}
+.music-panel span {
+  font-size: 0.95rem;
+  color: #6d28d9;
+}
+}
+
 .logo {
   font-size: 1.4rem;
   font-weight: bold;

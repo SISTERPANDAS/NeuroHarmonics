@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="portal-body">
-    <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%); z-index: -1;"></div>
+        <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%); z-index: -1;"></div>
     <aside class="sidebar">
         <div class="sidebar-header">
             <h2 class="logo-text">Neuro<span>Harmonics</span></h2>
@@ -161,3 +161,19 @@
     <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
 </body>
 </html>
+<!-- Music Player Script -->
+<script src="{{ url_for('static', filename='music_player.js') }}"></script>
+
+<!-- Music Player Script -->
+<script src="{{ url_for('static', filename='music_player.js') }}"></script>
+<script>
+    function toggleMusicPanel() {
+        const panel = document.getElementById('music-panel');
+        panel.classList.toggle('open');
+        const btn = document.getElementById('playPauseBtn');
+        btn.innerHTML = window.musicPlayer && window.musicPlayer.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    }
+    document.getElementById('playPauseBtn').addEventListener('click', function() {
+        this.innerHTML = window.musicPlayer && window.musicPlayer.isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+    });
+</script>
