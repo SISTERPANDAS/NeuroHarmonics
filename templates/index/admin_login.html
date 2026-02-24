@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Portal | NeuroHarmonics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index/index.css') }}">
+</head>
+<body style="background-color: #0c081a; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;">
+
+    <div class="auth-card" style="opacity: 1; visibility: visible; transform: none;">
+        <h2 style="color: white; text-align: center; margin-bottom: 20px;">Administrator Login</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <input type="text" id="adminUsername" placeholder="Admin Username" 
+                   style="padding: 12px; border-radius: 8px; border: 1px solid #7c3aed; background: rgba(255,255,255,0.05); color: white;">
+            
+            <input type="password" id="adminPassword" placeholder="Password" 
+                   style="padding: 12px; border-radius: 8px; border: 1px solid #7c3aed; background: rgba(255,255,255,0.05); color: white;">
+            
+            <button class="primary-btn" onclick="submitAdminAuth()">Verify Identity</button>
+        </div>
+        
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ url_for('login_page') }}" style="color: #a855f7; text-decoration: none; font-size: 0.9rem;">← Return to User Login</a>
+        </p>
+    </div>
+
+    <script src="{{ url_for('static', filename='index/script.js') }}"></script>
+</body>
+</html>

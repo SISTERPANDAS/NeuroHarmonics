@@ -32,26 +32,7 @@ def register():
         traceback.print_exc()   # ← DO NOT REMOVE
         return jsonify({"success": False, "error": "Server error"}), 500
 
-@auth.route("/admin-login-page")
-def admin_login_page():
-    # Make sure 'admin_login.html' is inside your 'templates/index/' folder
-    return render_template("index/admin_login.html")
 
-
-@auth.route('/admin-login', methods=['POST'])
-def admin_login():
-    data = request.get_json()
-    # Query the 'admins' table instead of 'users'
-    admin = Admin.query.filter_by(username=data.get('username')).first()
-
-    if admin and admin.password == data.get('password'):  # Note: Use hashing in production
-        session['username'] = admin.username
-        session['admin_id'] = admin.admin_id
-        session['role'] = 'admin'
-        
-        return jsonify({"success": True, "redirect": url_for('admin_panel')})
-    
-    return jsonify({"success": False, "message": "Invalid Admin Credentials"}), 401
 
 @auth.route("/login", methods=["POST"])
 def login():
@@ -66,11 +47,14 @@ def login():
     if not user or not check_password_hash(user.password, password):
         return jsonify({"success": False, "error": "Invalid email or password"}), 401
 
-    # 3. SET STATUS TO ACTIVE
+    # 3. SET STATUS TO ACTIVE and last login
     user.status = "active"
-    
+    if hasattr(user, "last_login_at"):
+        from datetime import datetime
+        user.last_login_at = datetime.utcnow()
+
     try:
-        db.session.commit() # Save the "active" status to the database
+        db.session.commit()  # Save the "active" status to the database
     except Exception as e:
         db.session.rollback()
         return jsonify({"success": False, "error": "Database error"}), 500

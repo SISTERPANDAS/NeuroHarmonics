@@ -47,28 +47,6 @@
                 <i class="fas fa-sign-out-alt"></i> Sign Out
             </a>
         </div>
-        <div class="inbox-container">
-    <h2>Admin Support Inbox</h2>
-    
-    {% for inquiry in inquiries %}
-        <div class="message-card">
-            <div class="user-query">
-                <strong>You asked:</strong> {{ inquiry.message }}
-            </div>
-            
-            {% if inquiry.admin_reply %}
-            <div class="admin-response">
-                <span class="admin-badge">Admin Reply:</span>
-                <p>{{ inquiry.admin_reply }}</p>
-            </div>
-            {% else %}
-            <div class="pending-status">
-                <em>Waiting for admin review...</em>
-            </div>
-            {% endif %}
-        </div>
-    {% endfor %}
-</div>
     </aside>
 
     <main class="main-content">
@@ -102,10 +80,20 @@
         </section>
 
         <section id="live-analysis" class="content-section" style="display:none;">
-            <h1>Live EEG Analysis</h1>
+            <h1>Face & Emotion Analysis</h1>
+            <p class="subtitle">Allow camera access to capture a frame for emotion detection.</p>
             <div class="analysis-box glass">
-                <div class="simulation-circle"><i class="fas fa-microchip"></i></div>
-                <button class="start-btn">Start Simulation</button>
+                <div class="face-scan-area">
+                    <video id="face-video" autoplay playsinline muted></video>
+                    <canvas id="face-canvas" style="display:none;"></canvas>
+                    <div id="face-placeholder" class="simulation-circle"><i class="fas fa-user"></i></div>
+                </div>
+                <div id="face-result" class="face-result" style="display:none;"></div>
+                <div class="face-actions">
+                    <button type="button" class="start-btn" id="btn-start-scan" onclick="startFaceScan()">Start camera</button>
+                    <button type="button" class="start-btn start-btn-secondary" id="btn-capture" onclick="captureAndAnalyze()" style="display:none;">Capture & analyze</button>
+                    <button type="button" class="start-btn start-btn-secondary" id="btn-stop-scan" onclick="stopFaceScan()" style="display:none;">Stop camera</button>
+                </div>
             </div>
         </section>
 
@@ -154,7 +142,24 @@
             <button class="send-btn" onclick="postToCommunity()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
-    </section>
+</section>
+
+        <section id="recommendations" class="content-section" style="display:none;">
+            <h1>Recommendations</h1>
+            <p class="subtitle">Personalized quote, harmonic suggestion, and calming tip based on your mood.</p>
+            <div class="video-recommendations-container">
+                <!-- Video cards will be injected here by JS -->
+            </div>
+            <div class="glass-card rec-card">
+                <button type="button" class="start-btn" onclick="loadRecommendations()">Load recommendations</button>
+                <div id="rec-content" class="rec-content" style="display:none;">
+                    <p class="rec-quote" id="rec-quote"></p>
+                    <p class="rec-author" id="rec-author"></p>
+                    <p class="rec-harmonic"><strong>Harmonic:</strong> <span id="rec-harmonic"></span></p>
+                    <p class="rec-tip"><strong>Tip:</strong> <span id="rec-tip"></span></p>
+                </div>
+            </div>
+        </section>
 
     </main>
 

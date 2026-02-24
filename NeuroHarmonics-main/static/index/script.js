@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault(); //stops page refresh
       login();
     });
-  } 
+  }
 });
 
 function showLogin() {
@@ -112,33 +112,7 @@ const observer = new IntersectionObserver(
 
 revealElements.forEach(el => observer.observe(el));
 
-// Function for the main login page button
 function goToAdminLogin() {
-    // Redirects to a new dedicated admin login page
-    window.location.href = "/admin-login-page";
-}
-
-// Function to be used on the NEW admin login page (e.g., admin_login.html)
-async function submitAdminAuth() {
-    const userVal = document.getElementById('adminUsername').value;
-    const passVal = document.getElementById('adminPassword').value;
-
-    const response = await fetch('/admin-login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: userVal,
-            password: passVal
-        })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-        // Successful login sends them to the dashboard we built
-        window.location.href = result.redirect;
-    } else {
-        // Show error if credentials don't match Supabase 'admins' table
-        alert("Access Denied: " + result.message);
-    }
+    // Redirect to the Flask route URL
+    window.location.href = "/admin";
 }
