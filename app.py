@@ -119,6 +119,8 @@ def health_tips():
         },
     ]
     videos = random.sample(all_videos, 4) if len(all_videos) >= 4 else all_videos
+    for v in videos:
+        v['video_path'] = 'videos/' + v['video']
     
     # Time-based music recommendations
     current_hour = datetime.now().hour
@@ -163,19 +165,47 @@ def health_tips():
     # Select 2 random music files
     selected_music = random.sample(music_files, 2)
     
-    # Add quotes to each music item
+    # Add quotes and path to each music item
     for i, music in enumerate(selected_music):
         music['music_file'] = music['file']
         music['thumbnail'] = music['thumb']
         music['quote'] = quotes[i] if i < len(quotes) else quotes[0]
         music['title'] = f'{time_period.title()} Music {i+1}'
+        music['music_path'] = f"music/{time_period}/{music['music_file']}"
     
+    yoga_recommendations = [
+        {
+            'title': 'Scorpion Pose',
+            'video': 'yogas_morning_time/scorpion-pose.mp4',
+            'thumbnail': 'yoga_thumbnails/scorpion-pose.jpg',
+            'description': 'Advanced pose for strength and balance.'
+        },
+        {
+            'title': 'Meditation',
+            'video': 'yogas_morning_time/meditation.mp4',
+            'thumbnail': 'yoga_thumbnails/meditation.jpg',
+            'description': 'Calm your mind and focus your breath.'
+        },
+        {
+            'title': 'Child Pose',
+            'video': 'yogas_morning_time/childpose.mp4',
+            'thumbnail': 'yoga_thumbnails/childpose.jpg',
+            'description': 'Gentle stretch for relaxation and rest.'
+        },
+        {
+            'title': 'Balancing Stick',
+            'video': 'yogas_morning_time/balancing_stick.mp4',
+            'thumbnail': 'yoga_thumbnails/balancing_stick.jpg',
+            'description': 'Improve balance and posture.'
+        }
+    ]
     return render_template(
         "index/health_tips.html",
         videos=videos,
         music_recommendations=selected_music,
         time_greeting=time_greeting,
-        time_period=time_period
+        time_period=time_period,
+        yoga_recommendations=yoga_recommendations
     )
 
 @app.route("/logout")

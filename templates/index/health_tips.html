@@ -35,9 +35,10 @@
       <p class="section-subtitle">We've picked some perfect music for you based on the time of day</p>
       <div class="video-gallery-grid">
         {% for music in music_recommendations %}
-        <div class="video-card" onclick="playMusicCard('{{ url_for('static', filename='music/' + time_period + '/' + music.music_file) }}')">
+           {% set music_url = url_for('static', filename=music.music_path) %}
+           <div class="video-card" onclick="playMusicCard('{{ music_url }}')">
           <div class="video-thumb-container">
-            <img class="video-thumb" src="{{ url_for('static', filename='music_thumbnails/' + time_period + '/' + music.thumbnail) }}" alt="{{ music.title }} thumbnail">
+                <img class="video-thumb" src="{{ url_for('static', filename='music_thumbnails/' ~ time_period|string ~ '/' ~ music.thumbnail|string) }}" alt="{{ music.title }} thumbnail">
             <button class="play-btn">
               <i class="fas fa-play"></i>
             </button>
@@ -56,8 +57,9 @@
       {% for v in videos %}
       <div class="video-card">
         <div class="video-thumb-container">
-          <img class="video-thumb" src="{{ url_for('static', filename='dashboard/video_thumbs/' + v.thumb) }}" alt="{{ v.title }} thumbnail">
-          <button class="play-btn" onclick="playVideo('{{ url_for('static', filename='videos/' + v.video) }}', '{{ v.title }}')">
+              <img class="video-thumb" src="{{ url_for('static', filename='dashboard/video_thumbs/' ~ v.thumb) }}" alt="{{ v.title }} thumbnail">
+                {% set video_url = url_for('static', filename=v.video_path) %}
+                <button class="play-btn" onclick="playVideo('{{ video_url }}', '{{ v.title }}')">
             <i class="fas fa-play"></i>
           </button>
         </div>
@@ -73,7 +75,56 @@
       <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
         <h2 id="modalTitle"></h2>
-        <video id="modalVideo" controls autoplay></video>
+        <video id="modalVideo" controls autoplay poster="">
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </div>
+
+    <!-- Yoga Recommendations Section -->
+    <div class="yoga-section">
+      <h2 class="section-title">Yoga Recommendations for You</h2>
+      <div class="video-gallery-grid">
+        {% for yoga in yoga_recommendations %}
+          {% set yoga_video_url = url_for('static', filename=yoga.video) %}
+          {% set yoga_thumb_url = url_for('static', filename=yoga.thumbnail) %}
+          <div class="video-card" onclick="playYogaVideo('{{ yoga_video_url }}', '{{ yoga.title }}', '{{ yoga_thumb_url }}')">
+            <div class="video-thumb-container">
+              <img class="video-thumb" src="{{ yoga_thumb_url }}" alt="{{ yoga.title }} thumbnail">
+            </div>
+            <div class="video-title">{{ yoga.title }}</div>
+            <div class="video-tip">{{ yoga.description }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Emotional Health Importance Section -->
+    <div class="emotional-health-section">
+      <h2 class="section-title">Why Emotional Health Matters</h2>
+      <div class="importance-cards-grid">
+        <div class="importance-card">
+          <h3>Better Relationships</h3>
+          <p>Emotional health helps you connect, empathize, and communicate effectively.</p>
+        </div>
+        <div class="importance-card">
+          <h3>Resilience</h3>
+          <p>It enables you to bounce back from setbacks and manage stress.</p>
+        </div>
+        <div class="importance-card">
+          <h3>Physical Well-being</h3>
+          <p>Good emotional health reduces risk of chronic diseases and boosts immunity.</p>
+        </div>
+        <div class="importance-card">
+          <h3>Diseases from Neglect</h3>
+          <ul>
+            <li>Depression</li>
+            <li>Anxiety Disorders</li>
+            <li>Heart Disease</li>
+            <li>Sleep Disorders</li>
+            <li>Digestive Problems</li>
+          </ul>
+        </div>
       </div>
     </div>
 
@@ -99,6 +150,11 @@
   <script>
     // Video modal logic
     function playVideo(src, title) {
+      document.getElementById('modalVideo').src = src;
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('videoModal').style.display = 'block';
+    }
+    function playYogaVideo(src, title, thumb) {
       document.getElementById('modalVideo').src = src;
       document.getElementById('modalTitle').innerText = title;
       document.getElementById('videoModal').style.display = 'block';
