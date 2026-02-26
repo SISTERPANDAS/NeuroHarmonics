@@ -125,80 +125,123 @@
         </section>
 
         <section id="live-analysis" class="content-section" style="display:none;">
-                        <h1>Live Emotion Detection</h1>
-                        <div class="analysis-box glass">
-                                <div class="face-emotion-section">
-                                    <button type="button" class="face-btn" onclick="startFaceDetection()">Start Face Detection</button>
-                                    <div id="camera-container" style="display:none; margin-top:10px;">
-                                        <video id="camera" width="180" height="140" autoplay></video>
-                                        <button type="button" class="capture-btn" onclick="captureAndAnalyzeFace()">Capture & Analyze</button>
-                                    </div>
-                                    <div id="emotion-result" class="emotion-result"></div>
-                                </div>
+            <h1>Live Analysis</h1>
+            <div class="analysis-cards-grid">
+                <!-- Face Emotion Detection Card -->
+                <div class="analysis-card glass">
+                    <h2><i class="fas fa-smile"></i> Face Emotion Detection</h2>
+                    <div class="drop-area" id="face-drop-area">
+                        <div class="drop-instructions">
+                            <i class="fas fa-upload"></i> Drag & drop an image here<br>or click to capture from webcam
                         </div>
-                        <script>
-                        // Live face detection and emotion analysis for dashboard
-                        let stream = null;
-                        function startFaceDetection() {
-                            const cameraContainer = document.getElementById('camera-container');
-                            cameraContainer.style.display = 'block';
-                            navigator.mediaDevices.getUserMedia({ video: true })
-                                .then(s => {
-                                    stream = s;
-                                    document.getElementById('camera').srcObject = stream;
-                                })
-                                .catch(err => {
-                                    alert('Camera access denied.');
-                                });
+                        <input type="file" id="faceFile" accept="image/*" style="display:none;" />
+                        <button class="action-btn" onclick="startFaceDetection()">Use Webcam</button>
+                        <video id="camera" width="180" height="140" autoplay style="display:none;"></video>
+                        <button class="action-btn" id="captureBtn" style="display:none; margin-top:10px;" onclick="captureAndAnalyzeFace()">Capture & Analyze</button>
+                    </div>
+                    <button class="action-btn" style="margin-top:14px;" onclick="analyzeFaceEmotion()">Analyze Emotion</button>
+                    <div id="emotion-result" class="emotion-result"></div>
+                </div>
+                <!-- EEG Dataset Emotion Detection Card -->
+                <div class="analysis-card glass">
+                    <h2><i class="fas fa-brain"></i> EEG Dataset Emotion Detection</h2>
+                    <div class="drop-area" id="eeg-drop-area">
+                        <div class="drop-instructions">
+                            <i class="fas fa-upload"></i> Drag & drop EEG file here<br>or click to select (.edf, .csv, .txt)
+                        </div>
+                        <input type="file" id="eegFile" accept=".edf,.csv,.txt" style="display:none;" />
+                        <button class="action-btn" onclick="triggerEEGFileInput()">Select EEG File</button>
+                    </div>
+                    <button class="action-btn" style="margin-top:14px;" onclick="analyzeEEGFile()">Analyze EEG</button>
+                    <div id="eeg-emotion-result" class="emotion-result"></div>
+                </div>
+            </div>
+            <script>
+                        function analyzeFaceEmotion() {
+                            // Placeholder for backend integration
+                            document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Face emotion analysis triggered (not connected)</span>`;
                         }
-
-                        function captureAndAnalyzeFace() {
-                            const video = document.getElementById('camera');
-                            const canvas = document.createElement('canvas');
-                            canvas.width = video.videoWidth || 180;
-                            canvas.height = video.videoHeight || 140;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            const dataUrl = canvas.toDataURL('image/png');
-
-                            // Send image to backend for emotion detection
-                            fetch('/api/face/analyze', {
-                                method: 'POST',
-                                body: createFormDataFromBase64(dataUrl),
-                            })
-                                .then(res => res.json())
-                                .then(data => {
-                                    // Show emotion and accuracy
-                                    const resultDiv = document.getElementById('emotion-result');
-                                    if (data.emotion || data.dominantEmotion) {
-                                        resultDiv.innerHTML = `<span class="emotion-label">Emotion: ${data.emotion || data.dominantEmotion}</span><br><span class="emotion-accuracy">Accuracy: ${data.accuracy ? (data.accuracy*100).toFixed(2)+'%' : 'N/A'}</span>`;
-                                        resultDiv.classList.add('show');
-                                    } else {
-                                        resultDiv.innerHTML = 'No face detected.';
-                                        resultDiv.classList.remove('show');
-                                    }
-                                    // CSS effect
-                                    resultDiv.style.background = '#fff';
-                                    resultDiv.style.color = '#4c1d95';
-                                    resultDiv.style.borderRadius = '8px';
-                                    resultDiv.style.padding = '8px 12px';
-                                    resultDiv.style.boxShadow = '0 2px 8px #a855f7';
-                                })
-                                .catch(() => {
-                                    document.getElementById('emotion-result').innerHTML = 'Error analyzing face.';
-                                });
-                        }
-
-                        function createFormDataFromBase64(dataUrl) {
-                            // Convert base64 to Blob
-                            const arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-                            for (let i = 0; i < n; i++) u8arr[i] = bstr.charCodeAt(i);
-                            const blob = new Blob([u8arr], { type: mime });
-                            const formData = new FormData();
-                            formData.append('image', blob, 'face.png');
-                            return formData;
-                        }
-                        </script>
+            // --- Face Detection Drag & Drop and Webcam ---
+            const faceDropArea = document.getElementById('face-drop-area');
+            const faceFileInput = document.getElementById('faceFile');
+            faceDropArea.addEventListener('click', () => faceFileInput.click());
+            faceDropArea.addEventListener('dragover', e => { e.preventDefault(); faceDropArea.classList.add('drag-over'); });
+            faceDropArea.addEventListener('dragleave', () => faceDropArea.classList.remove('drag-over'));
+            faceDropArea.addEventListener('drop', e => {
+                e.preventDefault();
+                faceDropArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    // Show preview or handle file (not connected)
+                    document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis (not connected)</span>`;
+                } else {
+                    document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                }
+            });
+            faceFileInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis (not connected)</span>`;
+                } else {
+                    document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                }
+            });
+            // Webcam logic
+            let stream = null;
+            function startFaceDetection() {
+                const video = document.getElementById('camera');
+                const captureBtn = document.getElementById('captureBtn');
+                video.style.display = 'block';
+                captureBtn.style.display = 'inline-block';
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(s => {
+                        stream = s;
+                        video.srcObject = stream;
+                    })
+                    .catch(err => {
+                        alert('Camera access denied.');
+                    });
+            }
+            function captureAndAnalyzeFace() {
+                // Only capture, not analyze
+                const video = document.getElementById('camera');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth || 180;
+                canvas.height = video.videoHeight || 140;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Face image captured (not connected)</span>`;
+            }
+            // --- EEG Drag & Drop ---
+            const eegDropArea = document.getElementById('eeg-drop-area');
+            const eegFileInput = document.getElementById('eegFile');
+            eegDropArea.addEventListener('click', () => eegFileInput.click());
+            eegDropArea.addEventListener('dragover', e => { e.preventDefault(); eegDropArea.classList.add('drag-over'); });
+            eegDropArea.addEventListener('dragleave', () => eegDropArea.classList.remove('drag-over'));
+            eegDropArea.addEventListener('drop', e => {
+                e.preventDefault();
+                eegDropArea.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                if (file && (file.name.endsWith('.edf') || file.name.endsWith('.csv') || file.name.endsWith('.txt'))) {
+                    document.getElementById('eeg-emotion-result').innerHTML = `<span style='color:#a855f7;'>EEG file ready for analysis (not connected)</span>`;
+                } else {
+                    document.getElementById('eeg-emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                }
+            });
+            eegFileInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                if (file && (file.name.endsWith('.edf') || file.name.endsWith('.csv') || file.name.endsWith('.txt'))) {
+                    document.getElementById('eeg-emotion-result').innerHTML = `<span style='color:#a855f7;'>EEG file ready for analysis (not connected)</span>`;
+                } else {
+                    document.getElementById('eeg-emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                }
+            });
+            function triggerEEGFileInput() { eegFileInput.click(); }
+            function analyzeEEGFile() {
+                // Only show ready message
+                document.getElementById('eeg-emotion-result').innerHTML = `<span style='color:#a855f7;'>EEG analysis triggered (not connected)</span>`;
+            }
+            </script>
         </section>
 
         <section id="support" class="content-section" style="display:none;">
@@ -289,12 +332,12 @@
           </div>
 
           <div class="profile-edit-section">
-            <label for="profile-name">Name</label>
+            <label for="username">Name</label>
 
             <input
               type="text"
-              id="profile-name"
-              name="profile-name"
+              id="username"
+              name="username"
               value="{{ user.username or 'Guest User' }}"
               class="edit-name-input"
               required

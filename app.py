@@ -32,7 +32,7 @@ def update_profile():
         # UPDATE USERNAME
         # =========================
         # Accept BOTH names for safety
-        new_name = request.form.get('username') or request.form.get('profile-name')
+        new_name = request.form.get('username')
 
         if new_name:
             new_name = new_name.strip()
