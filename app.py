@@ -109,11 +109,52 @@ def dashboard():
     user = User.query.get(session["user_id"])
     if not user:
         return redirect("/logout")
-    return render_template("dashboard/dashboard.html", user=user)
+    # fetch community messages from the last 30 days (oldest first)
+    from models import CommunityMessage
+    from datetime import datetime, timedelta
+
+    # remove messages older than a month so the chat stays fresh
+    cutoff = datetime.utcnow() - timedelta(days=30)
+    CommunityMessage.query.filter(CommunityMessage.timestamp < cutoff).delete()
+    db.session.commit()
+
+    msgs = (
+        CommunityMessage.query
+        .filter(CommunityMessage.timestamp >= cutoff)
+        .order_by(CommunityMessage.timestamp.asc())
+        .all()
+    )
+    return render_template("dashboard/dashboard.html", user=user, community_messages=msgs)
 
 @app.route("/admin")
 def admin_page():
     return render_template("admin/admin.html")
+@app.route("/post-community", methods=["POST"])
+def post_community():
+    """Receive a chat message and persist to database."""
+    if "user_id" not in session:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    data = request.get_json() or {}
+    msg = data.get("message", "").strip()
+    if not msg:
+        return jsonify({"success": False, "error": "Empty message"}), 400
+    user = User.query.get(session["user_id"])
+    username = user.username if user and user.username else (user.email.split('@')[0] if user and user.email else "User")
+    from models import CommunityMessage
+    cm = CommunityMessage(username=username, content=msg)
+    db.session.add(cm)
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return jsonify({"success": False, "error": "Database error"}), 500
+    return jsonify({
+        "success": True,
+        "id": cm.id,
+        "username": cm.username,
+        "content": cm.content,
+        "timestamp": cm.timestamp.isoformat()
+    })
 
 @app.route("/health-tips")
 def health_tips():

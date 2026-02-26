@@ -271,11 +271,11 @@ async function postToCommunity() {
         if (response.ok) {
             // OPTION A: Add the message to the screen immediately without reloading
             const newMsg = document.createElement('div');
-            newMsg.className = 'chat-bubble own-message';
+            newMsg.className = 'message';
             newMsg.innerHTML = `
-                <span class="sender-name">You</span>
-                <p class="message-text">${content}</p>
-                <span class="timestamp">Just now</span>
+                <span class="msg-user"><strong>You:</strong></span>
+                <span class="msg-content">${content}</span>
+                <small class="msg-time">Just now</small>
             `;
             chatBox.appendChild(newMsg);
             
