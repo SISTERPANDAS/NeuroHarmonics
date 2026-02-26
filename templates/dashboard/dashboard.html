@@ -157,35 +157,84 @@
                 </div>
             </div>
             <script>
-                        function analyzeFaceEmotion() {
-                            // Placeholder for backend integration
-                            document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Face emotion analysis triggered (not connected)</span>`;
-                        }
+            async function analyzeFaceEmotion() {
+                const resultDiv = document.getElementById('emotion-result');
+                // Try to get image from file input or webcam
+                let imageData = null;
+                // 1. Check file input
+                const fileInput = document.getElementById('faceFile');
+                if (fileInput.files && fileInput.files[0]) {
+                    const file = fileInput.files[0];
+                    if (!file.type.startsWith('image/')) {
+                        resultDiv.innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                        return;
+                    }
+                    // Read as base64
+                    imageData = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(file);
+                    });
+                } else {
+                    // 2. Try webcam capture
+                    const video = document.getElementById('camera');
+                    if (video && video.style.display !== 'none' && (video.videoWidth > 0 && video.videoHeight > 0)) {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth || 180;
+                        canvas.height = video.videoHeight || 140;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        imageData = canvas.toDataURL('image/png');
+                    }
+                }
+                if (!imageData) {
+                    resultDiv.innerHTML = `<span style='color:red;'>Please select an image or use the webcam.</span>`;
+                    return;
+                }
+                resultDiv.innerHTML = `<span style='color:#a855f7;'>Analyzing...</span>`;
+                try {
+                    const res = await fetch('http://172.18.132.46:8000/predict', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: imageData })
+                    });
+                    if (!res.ok) throw new Error('API error');
+                    const data = await res.json();
+                    if (data.emotion || data.dominantEmotion) {
+                        resultDiv.innerHTML = `<span class='emotion-label'>Emotion: ${data.emotion || data.dominantEmotion}</span>`;
+                    } else {
+                        resultDiv.innerHTML = `<span style='color:red;'>No emotion detected.</span>`;
+                    }
+                } catch (err) {
+                    resultDiv.innerHTML = `<span style='color:red;'>Error analyzing face.</span>`;
+                }
+            }
             // --- Face Detection Drag & Drop and Webcam ---
             const faceDropArea = document.getElementById('face-drop-area');
             const faceFileInput = document.getElementById('faceFile');
-            faceDropArea.addEventListener('click', () => faceFileInput.click());
-            faceDropArea.addEventListener('dragover', e => { e.preventDefault(); faceDropArea.classList.add('drag-over'); });
-            faceDropArea.addEventListener('dragleave', () => faceDropArea.classList.remove('drag-over'));
-            faceDropArea.addEventListener('drop', e => {
-                e.preventDefault();
-                faceDropArea.classList.remove('drag-over');
-                const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    // Show preview or handle file (not connected)
-                    document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis (not connected)</span>`;
-                } else {
-                    document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
-                }
-            });
-            faceFileInput.addEventListener('change', e => {
-                const file = e.target.files[0];
-                if (file && file.type.startsWith('image/')) {
-                    document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis (not connected)</span>`;
-                } else {
-                    document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
-                }
-            });
+                // Only allow drag-and-drop for file input
+                faceDropArea.addEventListener('dragover', e => { e.preventDefault(); faceDropArea.classList.add('drag-over'); });
+                faceDropArea.addEventListener('dragleave', () => faceDropArea.classList.remove('drag-over'));
+                faceDropArea.addEventListener('drop', e => {
+                    e.preventDefault();
+                    faceDropArea.classList.remove('drag-over');
+                    const file = e.dataTransfer.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        faceFileInput.files = e.dataTransfer.files;
+                        document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis</span>`;
+                    } else {
+                        document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                    }
+                });
+                faceFileInput.addEventListener('change', e => {
+                    const file = e.target.files[0];
+                    if (file && file.type.startsWith('image/')) {
+                        document.getElementById('emotion-result').innerHTML = `<span style='color:#a855f7;'>Image ready for analysis</span>`;
+                    } else {
+                        document.getElementById('emotion-result').innerHTML = `<span style='color:red;'>Invalid file type.</span>`;
+                    }
+                });
             // Webcam logic
             let stream = null;
             function startFaceDetection() {
