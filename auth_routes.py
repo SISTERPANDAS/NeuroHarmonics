@@ -19,6 +19,8 @@ def login():
         session["user_id"] = user.id
         session["username"] = username
         session["role"] = user.role
+        if user.avatar:
+            session["avatar"] = user.avatar
         user.status = "active"
         try:
             db.session.commit()

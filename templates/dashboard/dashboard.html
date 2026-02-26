@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="portal-body">
+    <!-- Mobile menu button -->
+    <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+    </button>
         <div style="position: fixed; top: -10%; left: -10%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(157, 78, 221, 0.1) 0%, transparent 70%); z-index: -1;"></div>
     <aside class="sidebar">
         <div class="sidebar-header">
@@ -36,10 +40,14 @@
         <div class="sidebar-footer">
             <div class="user-profile">
                 <div class="avatar">
-                    <img src="https://api.dicebear.com/7.x/identicon/svg?seed={{ session.get('username', 'user') }}" alt="Profile Picture" class="profile-pic" />
+                    {% if user.avatar %}
+                        <img src="{{ url_for('static', filename=user.avatar) }}" alt="Profile Picture" class="profile-pic" />
+                    {% else %}
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed={{ user.username or 'user' }}" alt="Profile Picture" class="profile-pic" />
+                    {% endif %}
                 </div>
                 <div class="user-info">
-                    <span class="user-name">{{ session.get('username', 'Guest User') }}</span>
+                    <span class="user-name">{{ user.username or 'Guest User' }}</span>
                     <span class="user-role">User</span>
                 </div>
             </div>
@@ -77,9 +85,21 @@
     <main class="main-content">
         
         <section id="dashboard" class="content-section">
-            <h1 class="welcome-text">Hello, <span>{{ session['username'] }}</span></h1>
-            <p class="subtitle">Here's your neural performance overview.</p>
-            
+            <!-- Profile summary at top of dashboard -->
+            <div class="glass-card" style="display:flex;align-items:center;gap:20px;margin-bottom:24px;">
+                <div class="avatar" style="margin-bottom:0;">
+                    {% if user.avatar %}
+                        <img src="{{ url_for('static', filename=user.avatar) }}" alt="Profile Picture" class="profile-pic" />
+                    {% else %}
+                        <img src="https://api.dicebear.com/7.x/identicon/svg?seed={{ user.username or 'user' }}" alt="Profile Picture" class="profile-pic" />
+                    {% endif %}
+                </div>
+                <div>
+                    <h1 class="welcome-text" style="margin:0;">Hello, <span>{{ user.username or 'Guest User' }}</span></h1>
+                    <p class="subtitle" style="margin-top:6px;">Here's your neural performance overview.</p>
+                </div>
+            </div>
+
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-header">Focus Score <i class="fas fa-bolt"></i></div>
@@ -231,82 +251,62 @@
     </main>
     <!-- Settings Modal -->
     <div id="settings-modal" class="settings-modal" style="display:none;">
-        <div class="settings-modal-content glass-card">
-            <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
-            <h2>Edit Profile</h2>
-            <form id="profile-form" enctype="multipart/form-data" onsubmit="saveProfile(event)">
-                <div class="profile-edit-section">
-                    <label for="profile-photo" class="profile-photo-label">Profile Photo</label>
-                    <div class="photo-drop-area" id="photo-drop-area" ondrop="handleDrop(event)" ondragover="handleDragOver(event)">
-                        <img id="preview-photo" src="https://api.dicebear.com/7.x/identicon/svg?seed={{ session.get('username', 'user') }}" class="profile-pic" style="width:80px;height:80px;" />
-                        <input type="file" id="profile-photo" name="profile-photo" accept="image/*" style="display:none;" onchange="previewPhoto(event)" />
-                        <button type="button" class="upload-btn" onclick="document.getElementById('profile-photo').click()">Browse</button>
-                        <span class="drag-text">or drag & drop</span>
-                    </div>
-                </div>
-                <div class="profile-edit-section">
-                    <label for="profile-name">Name</label>
-                    <input type="text" id="profile-name" name="profile-name" value="{{ session.get('username', 'Guest User') }}" class="edit-name-input" />
-                </div>
-                <button type="submit" class="submit-btn">Save Changes</button>
-            </form>
-        </div>
+      <div class="settings-modal-content glass-card">
+        <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
+        <h2>Edit Profile</h2>
+
+        <!-- Single, clean form: textbox + submit button -->
+        <form id="profile-form" enctype="multipart/form-data" onsubmit="saveProfile(event)">
+          <div class="profile-edit-section">
+            <label for="profile-photo">Profile Photo</label>
+
+            <div class="photo-drop-area" id="photo-drop-area">
+              <img
+                id="preview-photo"
+                src="{% if user.avatar %}{{ url_for('static', filename=user.avatar) }}{% else %}https://api.dicebear.com/7.x/identicon/svg?seed={{ user.username or 'user' }}{% endif %}"
+                class="profile-pic"
+                style="width:80px;height:80px;"
+              />
+
+              <input
+                type="file"
+                id="profile-photo"
+                name="profile-photo"
+                accept="image/*"
+                style="display:none;"
+              />
+
+              <button
+                type="button"
+                class="upload-btn"
+                onclick="document.getElementById('profile-photo').click()"
+              >
+                Browse
+              </button>
+
+              <span class="drag-text">or drag & drop</span>
+            </div>
+          </div>
+
+          <div class="profile-edit-section">
+            <label for="profile-name">Name</label>
+
+            <input
+              type="text"
+              id="profile-name"
+              name="profile-name"
+              value="{{ user.username or 'Guest User' }}"
+              class="edit-name-input"
+              required
+            />
+          </div>
+
+          <button type="submit" class="submit-btn">
+            Save Changes
+          </button>
+        </form>
+      </div>
     </div>
-    <script>
-    function openSettingsModal() {
-        document.getElementById('settings-modal').style.display = 'block';
-        document.body.classList.add('modal-open');
-    }
-    function closeSettingsModal() {
-        document.getElementById('settings-modal').style.display = 'none';
-        document.body.classList.remove('modal-open');
-    }
-    function previewPhoto(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('preview-photo').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-    function handleDragOver(event) {
-        event.preventDefault();
-        event.dataTransfer.dropEffect = 'copy';
-        document.getElementById('photo-drop-area').classList.add('drag-over');
-    }
-    function handleDrop(event) {
-        event.preventDefault();
-        document.getElementById('photo-drop-area').classList.remove('drag-over');
-        const file = event.dataTransfer.files[0];
-        if (file) {
-            document.getElementById('profile-photo').files = event.dataTransfer.files;
-            previewPhoto({ target: { files: event.dataTransfer.files } });
-        }
-    }
-    document.getElementById('photo-drop-area').addEventListener('dragleave', function() {
-        this.classList.remove('drag-over');
-    });
-    function saveProfile(event) {
-        event.preventDefault();
-        const formData = new FormData(document.getElementById('profile-form'));
-        fetch('/update-profile', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                closeSettingsModal();
-                location.reload();
-            } else {
-                alert(data.error || 'Failed to update profile.');
-            }
-        })
-        .catch(() => alert('Server error.'));
-    }
-    </script>
 
     <script src="{{ url_for('static', filename='dashboard/dashboard.js') }}"></script>
 </body>

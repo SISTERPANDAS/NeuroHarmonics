@@ -1,6 +1,6 @@
 
 
-function showSection(sectionId) {
+function showSection(sectionId, el) {
     // 1. Hide all sections
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(section => {
@@ -14,8 +14,107 @@ function showSection(sectionId) {
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active');
     });
-    event.currentTarget.classList.add('active');
+    if (el) {
+        el.classList.add('active');
+    }
 }
+
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    sidebar.classList.toggle('open');
+}
+
+function openSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+    modal.style.display = 'flex';
+    document.body.classList.add('modal-open');
+}
+
+function closeSettingsModal() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+    modal.style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+function saveProfile(event) {
+    if (event) event.preventDefault();
+    const form = document.getElementById('profile-form');
+    if (!form) return;
+    const formData = new FormData(form);
+
+    fetch('/update-profile', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                closeSettingsModal();
+                window.location.reload();
+            } else {
+                alert(data.error || 'Failed to update profile.');
+            }
+        })
+        .catch(() => alert('Server error.'));
+}
+
+function initProfileModal() {
+    const form = document.getElementById('profile-form');
+    const photoInput = document.getElementById('profile-photo');
+    const uploadBtn = document.querySelector('.upload-btn');
+    const dropArea = document.getElementById('photo-drop-area');
+
+    if (form) {
+        form.addEventListener('submit', saveProfile);
+    }
+
+    if (uploadBtn && photoInput) {
+        uploadBtn.addEventListener('click', () => photoInput.click());
+    }
+
+    if (photoInput) {
+        photoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                const img = document.getElementById('preview-photo');
+                if (img) img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    if (dropArea && photoInput) {
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.classList.add('drag-over');
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.classList.remove('drag-over');
+        });
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (!file) return;
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            photoInput.files = dataTransfer.files;
+            const reader = new FileReader();
+            reader.onload = function (ev) {
+                const img = document.getElementById('preview-photo');
+                if (img) img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initProfileModal);
 
 
 

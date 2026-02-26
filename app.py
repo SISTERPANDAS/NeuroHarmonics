@@ -12,30 +12,82 @@ db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', '
 
 @app.route('/update-profile', methods=['POST'])
 def update_profile():
-    if 'user_id' not in session:
+    """
+    Update logged-in user's profile (username + avatar).
+    Saves avatar in static/uploads/avatars.
+    """
+
+    # ✅ Check login
+    user_id = session.get('user_id')
+    if not user_id:
         return jsonify({'success': False, 'error': 'Not logged in'}), 401
-    user = User.query.get(session['user_id'])
+
+    # ✅ SQLAlchemy safe fetch
+    user = db.session.get(User, user_id)
     if not user:
         return jsonify({'success': False, 'error': 'User not found'}), 404
-    name = request.form.get('profile-name')
-    if name:
-        user.username = name
-        session['username'] = name
-    photo = request.files.get('profile-photo')
-    if photo:
-        filename = secure_filename(photo.filename)
-        ext = os.path.splitext(filename)[1]
-        avatar_dir = os.path.join('uploads', 'avatars')
-        os.makedirs(avatar_dir, exist_ok=True)
-        avatar_path = os.path.join(avatar_dir, f'user_{user.id}{ext}')
-        photo.save(avatar_path)
-        user.avatar = avatar_path
+
     try:
+        # =========================
+        # UPDATE USERNAME
+        # =========================
+        # Accept BOTH names for safety
+        new_name = request.form.get('username') or request.form.get('profile-name')
+
+        if new_name:
+            new_name = new_name.strip()
+
+            if len(new_name) < 2:
+                return jsonify({'success': False, 'error': 'Name too short'}), 400
+
+            user.username = new_name
+            session['username'] = new_name
+
+        # =========================
+        # UPDATE AVATAR
+        # =========================
+        photo = request.files.get('avatar') or request.files.get('profile-photo')
+
+        if photo and photo.filename:
+
+            filename = secure_filename(photo.filename)
+            ext = os.path.splitext(filename)[1].lower()
+
+            # default extension fallback
+            if not ext:
+                ext = ".png"
+
+            static_root = os.path.join(app.root_path, 'static')
+            avatar_dir = os.path.join(static_root, 'uploads', 'avatars')
+            os.makedirs(avatar_dir, exist_ok=True)
+
+            # ✅ unique filename (prevents browser cache problem)
+            stored_name = f"user_{user.id}_{int(datetime.utcnow().timestamp())}{ext}"
+            avatar_fs_path = os.path.join(avatar_dir, stored_name)
+
+            photo.save(avatar_fs_path)
+
+            # relative path for url_for('static')
+            avatar_rel_path = os.path.join('uploads', 'avatars', stored_name)
+
+            user.avatar = avatar_rel_path
+            session['avatar'] = avatar_rel_path
+
+        # =========================
+        # SAVE DATABASE
+        # =========================
         db.session.commit()
-        return jsonify({'success': True})
+
+        return jsonify({
+            'success': True,
+            'username': user.username,
+            'avatar': user.avatar
+        })
+
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)})
+        print("Update profile error:", e)
+        return jsonify({'success': False, 'error': str(e)}), 500
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -64,8 +116,10 @@ def register_page():
 def dashboard():
     if "user_id" not in session:
         return redirect("/login")
-    user_name = session.get("username", "Guest User")
-    return render_template("dashboard/dashboard.html", username=user_name)
+    user = User.query.get(session["user_id"])
+    if not user:
+        return redirect("/logout")
+    return render_template("dashboard/dashboard.html", user=user)
 
 @app.route("/admin")
 def admin_page():
