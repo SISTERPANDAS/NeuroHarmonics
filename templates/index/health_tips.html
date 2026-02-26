@@ -36,9 +36,10 @@
       <div class="video-gallery-grid">
         {% for music in music_recommendations %}
            {% set music_url = url_for('static', filename=music.music_path) %}
+           {% set thumb_url = url_for('static', filename=music.thumbnail) %}
            <div class="video-card" onclick="playMusicCard('{{ music_url }}')">
           <div class="video-thumb-container">
-                <img class="video-thumb" src="{{ url_for('static', filename='music_thumbnails/' ~ time_period|string ~ '/' ~ music.thumbnail|string) }}" alt="{{ music.title }} thumbnail">
+                <img class="video-thumb" src="{{ thumb_url }}" alt="{{ music.title }} thumbnail">
             <button class="play-btn">
               <i class="fas fa-play"></i>
             </button>

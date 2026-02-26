@@ -1,101 +1,229 @@
+/* Avatar/Profile Picture */
+.avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--accent-purple) 60%, #fff 100%);
+    box-shadow: 0 4px 24px rgba(157,78,221,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.profile-pic {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 8px var(--accent-purple);
+}
+
+.user-name {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+.user-role {
+    font-size: 0.95rem;
+    color: var(--accent-purple);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+#three-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+}
+/* =========================================================
+   🧠 NEUROHARMONICS DASHBOARD CSS — FINAL STRUCTURED VERSION
+   ========================================================= */
+
+/* ================= ROOT VARIABLES ================= */
+
 :root {
-    --bg-black: #05010a; /* Deeper black-purple */
-    --sidebar-bg: #0d041a; /* Dark violet sidebar */
-    --card-bg: rgba(22, 10, 41, 0.7); /* Translucent neural cards */
-    --accent-purple: #9d4edd; /* Electric purple */
-    --glow-purple: #c77dff; /* Neon highlight */
+    --bg-black: #05010a;
+    --sidebar-bg: #0d041a;
+    --card-bg: rgba(22, 10, 41, 0.7);
+    --accent-purple: #9d4edd;
+    --glow-purple: #c77dff;
     --text-muted: #a0a0c0;
     --neuron-line: rgba(157, 78, 221, 0.2);
 }
 
+/* ================= BASE BODY ================= */
+
+body.portal-body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-black);
+    color: #e0e0ff;
+    overflow-x: hidden;
+
+    /* Neural Background Pattern */
+    background-image:
+        radial-gradient(circle at 2px 2px, var(--neuron-line) 1px, transparent 0);
+    background-size: 40px 40px;
+}
+
+/* Neural Ambient Pulse */
+body.portal-body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 30% 40%, rgba(157,78,221,0.08), transparent 60%);
+    animation: neuralPulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes neuralPulse {
+    from { opacity: 0.4; transform: scale(1); }
+    to { opacity: 0.9; transform: scale(1.05); }
+}
+
+/* ================= MAIN CONTENT ================= */
+
 .main-content {
-    margin-left: 280px; /* This MUST match the sidebar width */
+    margin-left: 280px;
     padding: 60px;
-    width: calc(100% - 280px); /* Ensures it doesn't overflow the screen */
+    width: calc(100% - 280px);
     box-sizing: border-box;
     min-height: 100vh;
+
     display: flex;
     flex-direction: column;
     gap: 30px;
 }
 
-body.portal-body {
-    background-color: var(--bg-black);
-    /* Neural Network Background Pattern */
-    background-image: 
-        radial-gradient(circle at 2px 2px, var(--neuron-line) 1px, transparent 0);
-    background-size: 40px 40px;
-    color: #e0e0ff;
-    margin: 0;
-    display: block;
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-}
+/* ================= SIDEBAR ================= */
 
-/* Sidebar Styling with Glassmorphism */
 .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 280px;
     height: 100vh;
-    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1a0b2e 100%);
-    position: fixed;
-    border-right: 1px solid var(--neuron-line);
-    display: flex;
-    flex-direction: column;
     padding: 30px 20px;
     box-sizing: border-box;
-    left: 0;
-    top: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1a0b2e 100%);
+    border-right: 1px solid var(--neuron-line);
     box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 }
 
+/* Logo */
 .logo-text {
     font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: -1px;
 }
 
-.logo-text span { 
-    color: var(--accent-purple); 
+.logo-text span {
+    color: var(--accent-purple);
     text-shadow: 0 0 15px var(--accent-purple);
 }
 
+/* Navigation Items */
 .nav-item {
     width: 100%;
     padding: 15px;
-    background: transparent;
+    border-radius: 12px;
     border: none;
+    background: transparent;
     color: var(--text-muted);
     text-align: left;
-    font-size: 1rem;
     cursor: pointer;
-    border-radius: 12px;
-    transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    margin-bottom: 8px;
+
     display: flex;
     align-items: center;
     gap: 12px;
+
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
 }
 
-.nav-item.active, .nav-item:hover {
+.nav-item.active,
+.nav-item:hover {
     background: rgba(157, 78, 221, 0.15);
     color: white;
-    box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
     border-left: 4px solid var(--accent-purple);
+    box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
 }
 
-/* Stat Cards with Neural Glow */
+.nav-item.active::after {
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 20%;
+    width: 4px;
+    height: 60%;
+    background: linear-gradient(var(--accent-purple), transparent);
+    box-shadow: 0 0 10px var(--accent-purple);
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid var(--neuron-line);
+}
+
+/* ================= CARDS ================= */
+
+.glass-card {
+    background: rgba(25, 12, 45, 0.6);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 1px solid var(--neuron-line);
+    padding: 25px;
+
+    position: relative;
+    overflow: hidden;
+
+    transition: all 0.4s ease;
+}
+
+.glass-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent, rgba(199,125,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.glass-card:hover::before {
+    opacity: 1;
+}
+
+.glass-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 40px rgba(157,78,221,0.25);
+}
+
+/* Stat Card */
 .stat-card {
     background: var(--card-bg);
     padding: 30px;
     border-radius: 20px;
     border: 1px solid var(--neuron-line);
     backdrop-filter: blur(12px);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .stat-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(157, 78, 221, 0.2);
+    box-shadow: 0 10px 30px rgba(157,78,221,0.2);
     border-color: var(--accent-purple);
 }
 
@@ -105,17 +233,9 @@ body.portal-body {
     background: linear-gradient(to right, #fff, var(--glow-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    margin: 10px 0;
 }
 
-/* Chat & Forms with Neuron Aesthetics */
-.glass-card {
-    background: rgba(25, 12, 45, 0.6);
-    backdrop-filter: blur(15px);
-    padding: 25px;
-    border-radius: 20px;
-    border: 1px solid var(--neuron-line);
-}
+/* ================= BUTTONS ================= */
 
 .submit-btn {
     background: linear-gradient(45deg, var(--accent-purple), #5a189a);
@@ -125,8 +245,8 @@ body.portal-body {
     border-radius: 10px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
-    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(157,78,221,0.4);
+    transition: all 0.3s ease;
 }
 
 .submit-btn:hover {
@@ -134,11 +254,7 @@ body.portal-body {
     transform: scale(1.02);
 }
 
-.sidebar-footer { 
-    border-top: 1px solid var(--neuron-line); 
-    padding-top: 20px; 
-    margin-top: auto; 
-}
+/* Sign Out Button */
 .sign-out-btn {
     display: flex;
     align-items: center;
@@ -147,49 +263,34 @@ body.portal-body {
     width: 100%;
     padding: 12px;
     margin-top: 15px;
-    background: rgba(255, 77, 77, 0.05); /* Very subtle red tint */
-    color: #ff5f5f; /* Softer red for the purple theme */
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.95rem;
+
+    color: #ff5f5f;
+    background: rgba(255, 77, 77, 0.05);
     border-radius: 10px;
     border: 1px solid rgba(255, 77, 77, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+    text-decoration: none;
 
-.sign-out-btn i {
-    font-size: 1.1rem;
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .sign-out-btn:hover {
     background: rgba(255, 77, 77, 0.15);
-    color: #ff4d4d;
-    border-color: rgba(255, 77, 77, 0.5);
-    box-shadow: 0 0 20px rgba(255, 77, 77, 0.1);
     transform: translateY(-2px);
 }
 
-.sign-out-btn:hover i {
-    transform: translateX(3px); /* Makes the arrow "exit" slightly on hover */
-}
-
-.sign-out-btn:active {
-    transform: translateY(0);
-}
+/* ================= CHAT / MESSAGE ================= */
 
 .message-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(255,255,255,0.05);
     border-radius: 12px;
     padding: 15px;
-    margin-bottom: 20px;
-    border-left: 4px solid #7c3aed; /* NeuroHarmonics Purple */
+    border-left: 4px solid #7c3aed;
 }
 
 .admin-response {
     margin-top: 10px;
     padding: 10px;
-    background: rgba(124, 58, 237, 0.1);
+    background: rgba(124,58,237,0.1);
     border-radius: 8px;
 }
 
@@ -203,5 +304,56 @@ body.portal-body {
 .pending-status {
     color: #64748b;
     font-size: 0.85rem;
-    margin-top: 5px;
+}
+
+/* ================= ANIMATIONS ================= */
+
+.animate-float {
+    animation: smoothFloat 7s ease-in-out infinite;
+}
+
+@keyframes smoothFloat {
+    0%,100% { transform: translate3d(0,0,0); }
+    50% { transform: translate3d(0,-12px,0); }
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 1100px) {
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 30px;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: 0.4s;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 768px) {
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .glass-card {
+        padding: 18px;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--accent-purple), #5a189a);
+    border-radius: 20px;
 }
