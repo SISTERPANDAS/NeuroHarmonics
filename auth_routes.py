@@ -1,8 +1,27 @@
 from flask import Blueprint, request, jsonify, session
 from models import db, User
 from werkzeug.security import check_password_hash, generate_password_hash
+import re
 
 auth = Blueprint("auth", __name__, url_prefix="/api")
+
+# Validation helpers
+def is_valid_email(email):
+    """Validate email format"""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email) is not None
+
+def is_strong_password(password):
+    """Validate password strength (min 8 chars, alphanumeric)"""
+    if len(password) < 8:
+        return False, "Password must be at least 8 characters"
+    if not re.search(r'[a-z]', password):
+        return False, "Password must contain lowercase letters"
+    if not re.search(r'[A-Z]', password):
+        return False, "Password must contain uppercase letters"
+    if not re.search(r'[0-9]', password):
+        return False, "Password must contain numbers"
+    return True, "Valid"
 
 @auth.route("/login", methods=["POST"])
 def login():
@@ -43,6 +62,19 @@ def register():
         if not fullName or not email or not password:
             return jsonify({"success": False, "error": "All fields required"}), 400
 
+        # Validate email format
+        if not is_valid_email(email):
+            return jsonify({"success": False, "error": "Invalid email format"}), 400
+
+        # Validate password strength
+        is_strong, msg = is_strong_password(password)
+        if not is_strong:
+            return jsonify({"success": False, "error": msg}), 400
+
+        # Validate fullName (alphanumeric + spaces)
+        if not re.match(r'^[a-zA-Z\s]+$', fullName):
+            return jsonify({"success": False, "error": "Name must contain only letters and spaces"}), 400
+
         # Prevent duplicate emails
         if User.query.filter_by(email=email).first():
             return jsonify({"success": False, "error": "Email already registered"}), 400
@@ -52,7 +84,7 @@ def register():
         db.session.add(user)
         try:
             db.session.commit()
-        except Exception:
+        except Exception as e:
             db.session.rollback()
             return jsonify({"success": False, "error": "Database error"}), 500
 

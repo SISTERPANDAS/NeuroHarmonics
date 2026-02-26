@@ -65,10 +65,28 @@ function showRegister() {
     const email = document.querySelector("#registerForm input[type='email']").value;
     const password = document.querySelector("#registerForm input[type='password']").value;
     console.log("REGISTER: fullName=", fullName, "email=", email, "password=", password);
+    
     if (!fullName || !email || !password) {
       alert("Please fill all fields");
       return;
     }
+
+    // Client-side validation
+    if (!isValidEmail(email)) {
+      alert("Please enter a valid email address");
+      return;
+    }
+
+    if (!isStrongPassword(password)) {
+      alert("Password must be at least 8 characters with uppercase, lowercase, and numbers");
+      return;
+    }
+
+    if (!isValidName(fullName)) {
+      alert("Name must contain only letters and spaces");
+      return;
+    }
+
     try {
       const res = await fetch("/api/register", {
         method: "POST",
@@ -89,6 +107,25 @@ function showRegister() {
       alert("Server error. Check console.");
     }
   }
+
+// Validation helper functions
+function isValidEmail(email) {
+  const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return pattern.test(email);
+}
+
+function isStrongPassword(password) {
+  if (password.length < 8) return false;
+  if (!/[a-z]/.test(password)) return false;
+  if (!/[A-Z]/.test(password)) return false;
+  if (!/[0-9]/.test(password)) return false;
+  return true;
+}
+
+function isValidName(name) {
+  const pattern = /^[a-zA-Z\s]+$/;
+  return pattern.test(name);
+}
 
 function slideRight() {
   const slider = document.getElementById('testimonialSlider');

@@ -9,8 +9,10 @@ from admin_routes import admin
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
 
-# Supabase Postgres (global DB). Password 06Kingbeast#2328 → %23 in URL. SSL required by Supabase.
-SUPABASE_DB_URL = "postgresql://postgres:06Kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres?sslmode=require"
+# Supabase Postgres (global DB). Password 06Kingbeast#2328 → %23 in URL. Using pooler with port 6543.
+# Use the exact pooler URL provided by Supabase.
+# Password contains special character '#' so it must be URL-encoded as '%23'.
+SUPABASE_DB_URL = "postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:06Kingbeast%232328@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
 # Local SQLite fallback when Supabase is unreachable (e.g. network/firewall blocks port 5432)
 INSTANCE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "instance")
 os.makedirs(INSTANCE_DIR, exist_ok=True)
