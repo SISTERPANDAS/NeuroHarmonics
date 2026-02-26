@@ -1,5 +1,6 @@
 from flask import Flask, render_template, redirect, session, request, jsonify
 import os
+from datetime import datetime
 from werkzeug.utils import secure_filename
 from models import db, User
 from auth_routes import auth
@@ -7,8 +8,6 @@ from admin_routes import admin
 
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
-
-db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'neuroharmonics.db')
 
 @app.route('/update-profile', methods=['POST'])
 def update_profile():
@@ -88,7 +87,12 @@ def update_profile():
         db.session.rollback()
         print("Update profile error:", e)
         return jsonify({'success': False, 'error': str(e)}), 500
-app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+
+# Use shared Supabase Postgres by default; fall back to env for safety
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
+    "DATABASE_URL",
+    "postgresql://postgres:06kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres",
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
