@@ -9,90 +9,29 @@ from admin_routes import admin
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
 
-@app.route('/update-profile', methods=['POST'])
-def update_profile():
-    """
-    Update logged-in user's profile (username + avatar).
-    Saves avatar in static/uploads/avatars.
-    """
+# Supabase Postgres (global DB). Password 06Kingbeast#2328 → %23 in URL. SSL required by Supabase.
+SUPABASE_DB_URL = "postgresql://postgres:06Kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres?sslmode=require"
+# Local SQLite fallback when Supabase is unreachable (e.g. network/firewall blocks port 5432)
+INSTANCE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "instance")
+os.makedirs(INSTANCE_DIR, exist_ok=True)
+SQLITE_URL = "sqlite:///" + os.path.join(INSTANCE_DIR, "neuroharmonics.db")
 
-    # ✅ Check login
-    user_id = session.get('user_id')
-    if not user_id:
-        return jsonify({'success': False, 'error': 'Not logged in'}), 401
-
-    # ✅ SQLAlchemy safe fetch
-    user = db.session.get(User, user_id)
-    if not user:
-        return jsonify({'success': False, 'error': 'User not found'}), 404
-
+def _choose_database_url():
+    url = os.environ.get("DATABASE_URL", SUPABASE_DB_URL)
+    if url.startswith("sqlite"):
+        return url
+    # Quick connection test to Supabase (5 sec timeout) so app can fall back to SQLite if unreachable
     try:
-        # =========================
-        # UPDATE USERNAME
-        # =========================
-        # Accept BOTH names for safety
-        new_name = request.form.get('username')
-
-        if new_name:
-            new_name = new_name.strip()
-
-            if len(new_name) < 2:
-                return jsonify({'success': False, 'error': 'Name too short'}), 400
-
-            user.username = new_name
-            session['username'] = new_name
-
-        # =========================
-        # UPDATE AVATAR
-        # =========================
-        photo = request.files.get('avatar') or request.files.get('profile-photo')
-
-        if photo and photo.filename:
-
-            filename = secure_filename(photo.filename)
-            ext = os.path.splitext(filename)[1].lower()
-
-            # default extension fallback
-            if not ext:
-                ext = ".png"
-
-            static_root = os.path.join(app.root_path, 'static')
-            avatar_dir = os.path.join(static_root, 'uploads', 'avatars')
-            os.makedirs(avatar_dir, exist_ok=True)
-
-            # ✅ unique filename (prevents browser cache problem)
-            stored_name = f"user_{user.id}_{int(datetime.utcnow().timestamp())}{ext}"
-            avatar_fs_path = os.path.join(avatar_dir, stored_name)
-
-            photo.save(avatar_fs_path)
-
-            # relative path for url_for('static')
-            avatar_rel_path = os.path.join('uploads', 'avatars', stored_name)
-
-            user.avatar = avatar_rel_path
-            session['avatar'] = avatar_rel_path
-
-        # =========================
-        # SAVE DATABASE
-        # =========================
-        db.session.commit()
-
-        return jsonify({
-            'success': True,
-            'username': user.username,
-            'avatar': user.avatar
-        })
-
+        from sqlalchemy import create_engine, text
+        engine = create_engine(url, connect_args={"connect_timeout": 5})
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
     except Exception as e:
-        db.session.rollback()
-        print("Update profile error:", e)
-        return jsonify({'success': False, 'error': str(e)}), 500
+        print("Supabase unreachable ({}). Using local SQLite so the app can run.".format(e))
+        return SQLITE_URL
+    return url
 
-# Use shared Supabase Postgres by default; fall back to env for safety
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
-    "DATABASE_URL",
-    "postgresql://postgres:06kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres",
-)
+app.config["SQLALCHEMY_DATABASE_URI"] = _choose_database_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
@@ -100,6 +39,51 @@ db.init_app(app)
 # Register blueprints
 app.register_blueprint(auth)
 app.register_blueprint(admin)
+
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    """
+    Update logged-in user's profile (username + avatar).
+    Saves avatar in static/uploads/avatars.
+    """
+
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+
+    user = db.session.get(User, user_id)
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+
+    try:
+        new_name = request.form.get('username') or request.form.get('profile-name')
+        if new_name:
+            new_name = new_name.strip()
+            if len(new_name) < 2:
+                return jsonify({'success': False, 'error': 'Name too short'}), 400
+            user.username = new_name
+            session['username'] = new_name
+
+        photo = request.files.get('avatar') or request.files.get('profile-photo')
+        if photo and photo.filename:
+            filename = secure_filename(photo.filename)
+            ext = os.path.splitext(filename)[1].lower() or ".png"
+            static_root = os.path.join(app.root_path, 'static')
+            avatar_dir = os.path.join(static_root, 'uploads', 'avatars')
+            os.makedirs(avatar_dir, exist_ok=True)
+            stored_name = f"user_{user.id}_{int(datetime.utcnow().timestamp())}{ext}"
+            avatar_fs_path = os.path.join(avatar_dir, stored_name)
+            photo.save(avatar_fs_path)
+            avatar_rel_path = os.path.join('uploads', 'avatars', stored_name)
+            user.avatar = avatar_rel_path
+            session['avatar'] = avatar_rel_path
+
+        db.session.commit()
+        return jsonify({'success': True, 'username': user.username, 'avatar': user.avatar})
+    except Exception as e:
+        db.session.rollback()
+        print("Update profile error:", e)
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 with app.app_context():
     db.create_all()
