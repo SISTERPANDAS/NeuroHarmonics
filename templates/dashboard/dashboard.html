@@ -129,7 +129,9 @@
             <div class="analysis-cards-grid">
                 <!-- Face Emotion Detection Card -->
                 <div class="analysis-card glass">
-                    <h2><i class="fas fa-smile"></i> Face Emotion Detection</h2>
+                    <h2 style="position:relative;"><i class="fas fa-smile"></i> Face Emotion Detection
+                        <button class="refresh-btn" id="refresh-face" title="Refresh" style="position:absolute;top:0;right:0;background:none;border:none;font-size:1.2em;cursor:pointer;color:#a855f7;">&#x21bb;</button>
+                    </h2>
                     <div class="drop-area" id="face-drop-area">
                         <div class="drop-instructions">
                             <i class="fas fa-upload"></i> Drag & drop an image here<br>or click to capture from webcam
@@ -144,7 +146,9 @@
                 </div>
                 <!-- EEG Dataset Emotion Detection Card -->
                 <div class="analysis-card glass">
-                    <h2><i class="fas fa-brain"></i> EEG Dataset Emotion Detection</h2>
+                    <h2 style="position:relative;"><i class="fas fa-brain"></i> EEG Dataset Emotion Detection
+                        <button class="refresh-btn" id="refresh-eeg" title="Refresh" style="position:absolute;top:0;right:0;background:none;border:none;font-size:1.2em;cursor:pointer;color:#a855f7;">&#x21bb;</button>
+                    </h2>
                     <div class="drop-area" id="eeg-drop-area">
                         <div class="drop-instructions">
                             <i class="fas fa-upload"></i> Drag & drop EEG file here<br>or click to select (.edf, .csv, .txt)
@@ -156,7 +160,62 @@
                     <div id="eeg-emotion-result" class="emotion-result"></div>
                 </div>
             </div>
+            <style>
+            /* Ensure three.js background stays behind */
+            #three-bg {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: 0;
+                pointer-events: none;
+            }
+            .analysis-card {
+                transition: box-shadow 0.2s, background 0.2s;
+            }
+            .analysis-card:hover {
+                background: #f3f6fd !important;
+                box-shadow: 0 4px 24px 0 rgba(168,85,247,0.08);
+            }
+            .refresh-btn:hover {
+                color: #7c3aed;
+            }
+            </style>
             <script>
+                        // Refresh button logic for face card
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.getElementById('refresh-face').onclick = function() {
+                                // Reset file input
+                                const faceFileInput = document.getElementById('faceFile');
+                                faceFileInput.value = '';
+                                // Reset webcam
+                                const video = document.getElementById('camera');
+                                if (video && video.srcObject) {
+                                    const tracks = video.srcObject.getTracks();
+                                    tracks.forEach(track => track.stop());
+                                    video.srcObject = null;
+                                    video.style.display = 'none';
+                                }
+                                // Hide capture button
+                                const captureBtn = document.getElementById('captureBtn');
+                                if (captureBtn) captureBtn.style.display = 'none';
+                                // Reset result
+                                document.getElementById('emotion-result').innerHTML = '<span style="color:#a855f7;">Drop an image or use webcam to analyze emotion.</span>';
+                            };
+                            // Refresh button logic for eeg card
+                            document.getElementById('refresh-eeg').onclick = function() {
+                                // Reset EEG drag-and-drop area and result (customize as needed)
+                                const eegDropArea = document.getElementById('eeg-drop-area');
+                                if (eegDropArea) eegDropArea.classList.remove('drag-over');
+                                // Reset EEG file input if exists
+                                const eegFileInput = document.getElementById('eegFile');
+                                if (eegFileInput) eegFileInput.value = '';
+                                // Reset EEG result
+                                const eegResult = document.getElementById('eeg-emotion-result');
+                                if (eegResult) eegResult.innerHTML = '<span style="color:#a855f7;">Drop EEG data here to analyze emotion.</span>';
+                            };
+                        });
             async function analyzeFaceEmotion() {
                 const resultDiv = document.getElementById('emotion-result');
                 // Try to get image from file input or webcam
