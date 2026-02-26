@@ -156,6 +156,44 @@ def post_community():
         "timestamp": cm.timestamp.isoformat()
     })
 
+@app.route("/launch-game", methods=["POST"])
+def launch_game():
+    """Launch a game for the user."""
+    if "user_id" not in session:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    
+    data = request.get_json() or {}
+    game = data.get("game", "").strip().lower()
+    
+    if game == "space_invaders":
+        try:
+            # Verify package exists first - with detailed error reporting
+            try:
+                import space_invaders
+            except Exception as e:
+                import traceback
+                error_detail = f"{type(e).__name__}: {str(e)}"
+                return jsonify({"success": False, "error": f"space-invaders-pygame load error: {error_detail}. Install with: pip install space-invaders-pygame"}), 400
+            
+            # Launch game asynchronously using threading to avoid blocking Flask
+            import threading
+            def run_game():
+                try:
+                    import space_invaders
+                    space_invaders.run()
+                except Exception:
+                    pass  # Silently fail if game crashes
+            
+            # Start game in daemon thread so it doesn't block
+            thread = threading.Thread(target=run_game, daemon=True)
+            thread.start()
+            
+            return jsonify({"success": True, "message": "Space Invaders is launching! A new window should appear shortly."})
+        except Exception as e:
+            return jsonify({"success": False, "error": f"Error: {str(e)}"}), 500
+    else:
+        return jsonify({"success": False, "error": "Unknown game"}), 400
+
 @app.route("/health-tips")
 def health_tips():
     import random

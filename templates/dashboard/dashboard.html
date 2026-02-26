@@ -35,6 +35,9 @@
             <button class="nav-item" onclick="showSection('recommendations')">
                 <i class="fas fa-star"></i> Recommendations
             </button>
+            <button class="nav-item" onclick="showSection('references')">
+                <i class="fas fa-gamepad"></i> Games & References
+            </button>
         </nav>
 
         <div class="sidebar-footer">
@@ -398,6 +401,26 @@
         </div>
     </div>
     </section>
+
+        <section id="references" class="content-section" style="display:none;">
+            <h1>Games & References</h1>
+            <div class="games-grid">
+                <div class="game-card glass-card">
+                    <div class="game-thumbnail">
+                        <img src="{{ url_for('static', filename='Space-Invaders-Pygame-master.png') }}" alt="Space Invaders">
+                        <div class="game-overlay">
+                            <button class="play-btn" onclick="launchGame('space_invaders')">
+                                <i class="fas fa-play"></i> Play
+                            </button>
+                        </div>
+                    </div>
+                    <div class="game-info">
+                        <h3>Space Invaders</h3>
+                        <p>Classic arcade game - Defend against waves of alien invaders!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
     </main>
     <!-- Settings Modal -->

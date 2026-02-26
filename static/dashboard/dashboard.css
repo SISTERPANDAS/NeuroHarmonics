@@ -620,6 +620,118 @@ body.modal-open {
     font-size: 0.85rem;
 }
 
+/* ================= GAMES & REFERENCES ================= */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 20px 0;
+}
+
+.game-card {
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    cursor: pointer;
+    box-shadow: 0 8px 32px rgba(157, 78, 221, 0.15);
+    border: 1px solid rgba(199, 125, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, rgba(157, 78, 221, 0.08) 0%, rgba(93, 26, 140, 0.08) 100%);
+}
+
+.game-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 16px 48px rgba(157, 78, 221, 0.3);
+    border-color: rgba(199, 125, 255, 0.5);
+    background: linear-gradient(135deg, rgba(157, 78, 221, 0.15) 0%, rgba(93, 26, 140, 0.15) 100%);
+}
+
+.game-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a0b2e 0%, #2d0b4e 100%);
+}
+
+.game-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover .game-thumbnail img {
+    transform: scale(1.08);
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.game-card:hover .game-overlay {
+    opacity: 1;
+}
+
+.play-btn {
+    background: linear-gradient(45deg, var(--accent-purple), #5a189a);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(157, 78, 221, 0.4);
+}
+
+.play-btn:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(157, 78, 221, 0.6);
+}
+
+.play-btn:active {
+    transform: scale(0.95);
+}
+
+.game-info {
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.game-info h3 {
+    margin: 0 0 8px 0;
+    color: #c77dff;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.game-info p {
+    margin: 0;
+    color: #a0a0c0;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    flex: 1;
+}
+
 /* ================= ANIMATIONS ================= */
 
 .animate-float {

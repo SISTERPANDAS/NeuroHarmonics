@@ -288,3 +288,25 @@ async function postToCommunity() {
         console.error("Chat error:", error);
     }
 }
+
+function launchGame(gameName) {
+    if (gameName === 'space_invaders') {
+        fetch('/launch-game', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ game: 'space_invaders' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Launching Space Invaders... Enjoy the game!');
+            } else {
+                alert('Error: ' + (data.error || 'Could not launch game'));
+            }
+        })
+        .catch(error => {
+            console.error('Error launching game:', error);
+            alert('Error launching game. Please try again.');
+        });
+    }
+}
