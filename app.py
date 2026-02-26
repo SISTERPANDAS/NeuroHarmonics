@@ -1,13 +1,41 @@
-from flask import Flask, render_template, redirect, session
-from models import db
+from flask import Flask, render_template, redirect, session, request, jsonify
+import os
+from werkzeug.utils import secure_filename
+from models import db, User
 from auth_routes import auth
-from admin_routes import admin 
+from admin_routes import admin
 
 app = Flask(__name__)
 app.secret_key = "super-secret-key"
 
-import os
 db_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'neuroharmonics.db')
+
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'error': 'Not logged in'}), 401
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+    name = request.form.get('profile-name')
+    if name:
+        user.username = name
+        session['username'] = name
+    photo = request.files.get('profile-photo')
+    if photo:
+        filename = secure_filename(photo.filename)
+        ext = os.path.splitext(filename)[1]
+        avatar_dir = os.path.join('uploads', 'avatars')
+        os.makedirs(avatar_dir, exist_ok=True)
+        avatar_path = os.path.join(avatar_dir, f'user_{user.id}{ext}')
+        photo.save(avatar_path)
+        user.avatar = avatar_path
+    try:
+        db.session.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': str(e)})
 app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 

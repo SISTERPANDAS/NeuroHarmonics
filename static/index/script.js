@@ -27,59 +27,68 @@ function showRegister() {
 }
 
 
+
   async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  const response = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "same-origin",
-    body: JSON.stringify({ email, password })
-  });
-
-  const data = await response.json();
-
-  if (data.success) {
-    window.location.href = "/dashboard";
-  } else {
-    alert(data.error);
-  }
-}
-
-
-
- function register() {
-  const fullName = document.querySelector("#registerForm input[type='text']").value;
-  const email = document.querySelector("#registerForm input[type='email']").value;
-  const password = document.querySelector("#registerForm input[type='password']").value;
-
-  if (!fullName || !email || !password) {
-    alert("Please fill all fields");
-    return;
-  }
-
-  fetch("/api/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fullName, email, password })
-  })
-  .then(async res => {
-    const data = await res.json();
-    console.log("REGISTER RESPONSE:", data);
-
-    if (data.success) {
-      alert("🎉 Registration successful! Please login.");
-      window.location.href = "/login";
-    } else {
-      alert(data.error || "Registration failed");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    console.log("LOGIN: email=", email, "password=", password);
+    if (!email || !password) {
+      alert("Please enter both email and password");
+      return;
     }
-  })
-  .catch(err => {
-    console.error("REGISTER ERROR:", err);
-    alert("Server error. Check console.");
-  });
-}
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ email, password })
+      });
+      const data = await response.json();
+      console.log("LOGIN RESPONSE:", data);
+      if (data.success) {
+        // For now treat this as user login and go to user dashboard.
+        // If you later add role-based redirects, you can switch on data.role here.
+        window.location.href = "/dashboard";
+      } else {
+        alert(data.error);
+      }
+    } catch (err) {
+      console.error("LOGIN ERROR:", err);
+      alert("Server error. Check console.");
+    }
+  }
+
+
+
+ async function register() {
+    const fullName = document.querySelector("#registerForm input[type='text']").value;
+    const email = document.querySelector("#registerForm input[type='email']").value;
+    const password = document.querySelector("#registerForm input[type='password']").value;
+    console.log("REGISTER: fullName=", fullName, "email=", email, "password=", password);
+    if (!fullName || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ fullName, email, password })
+      });
+      const data = await res.json();
+      console.log("REGISTER RESPONSE:", data);
+      if (data.success) {
+        // User is logged in on the server; go straight to user dashboard.
+        window.location.href = "/dashboard";
+      } else {
+        alert(data.error || "Registration failed");
+      }
+    } catch (err) {
+      console.error("REGISTER ERROR:", err);
+      alert("Server error. Check console.");
+    }
+  }
 
 function slideRight() {
   const slider = document.getElementById('testimonialSlider');

@@ -1,7 +1,49 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session, redirect, render_template
 from models import db, User, Recommendation, SystemLog
 
 admin = Blueprint("admin", __name__)
+
+
+@admin.route("/admin-login-page", methods=["GET"])
+def admin_login_page():
+    """
+    Simple admin login page used when clicking 'Login as Admin' from the main login screen.
+    """
+    return render_template("admin/admin_login.html")
+
+
+@admin.route("/admin-login", methods=["POST"])
+def admin_login():
+    """
+    Admin-only login.
+    Expects JSON: { "username": "...", "password": "..." }
+    Validates against users with role='admin'.
+    """
+    try:
+        data = request.get_json() or {}
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            return jsonify({"success": False, "message": "Username and password required"}), 400
+
+        # Here we treat admin records as regular users with role='admin'.
+        # Password is stored hashed using the same mechanism as normal users.
+        from werkzeug.security import check_password_hash
+
+        admin_user = User.query.filter_by(username=username, role="admin").first()
+        if not admin_user or not check_password_hash(admin_user.password, password):
+            return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
+
+        session["user_id"] = admin_user.id
+        session["username"] = admin_user.username
+        session["role"] = admin_user.role
+
+        return jsonify({"success": True, "redirect": "/admin"})
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        return jsonify({"success": False, "message": "Server error during admin login"}), 500
 
 # 🔐 Dashboard stats
 @admin.route("/admin/stats")

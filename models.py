@@ -11,6 +11,7 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
 
     role = db.Column(db.String(20), default="user")
+    avatar = db.Column(db.String(255), nullable=True)
     status = db.Column(db.String(20), default="active")
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
