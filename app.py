@@ -12,26 +12,44 @@ app.secret_key = "super-secret-key"
 # Supabase Postgres (global DB). Password 06Kingbeast#2328 → %23 in URL. Using pooler with port 6543.
 # Use the exact pooler URL provided by Supabase.
 # Password contains special character '#' so it must be URL-encoded as '%23'.
-SUPABASE_DB_URL = "postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:06Kingbeast%232328@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
+# Corrected Supabase pooler URL: the project ref must be part of the host, not the username.
+SUPABASE_DB_URL = "postgresql://postgres:06Kingbeast%232328@pqeiqbqqrmzrkgeqrlkv.aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
 # Local SQLite fallback when Supabase is unreachable (e.g. network/firewall blocks port 5432)
 INSTANCE_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "instance")
 os.makedirs(INSTANCE_DIR, exist_ok=True)
 SQLITE_URL = "sqlite:///" + os.path.join(INSTANCE_DIR, "neuroharmonics.db")
 
+# Return a working URL, trying the pooler first then the direct DB host. If both are unreachable,
+# fall back to local SQLite. The pooler URL does not include sslmode because it may not be required;
+# the direct hostname includes sslmode=require for security. Environment variable DATABASE_URL
+# takes absolute precedence when provided by deployment.
 def _choose_database_url():
-    url = os.environ.get("DATABASE_URL", SUPABASE_DB_URL)
-    if url.startswith("sqlite"):
-        return url
-    # Quick connection test to Supabase (5 sec timeout) so app can fall back to SQLite if unreachable
-    try:
-        from sqlalchemy import create_engine, text
-        engine = create_engine(url, connect_args={"connect_timeout": 5})
-        with engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-    except Exception as e:
-        print("Supabase unreachable ({}). Using local SQLite so the app can run.".format(e))
-        return SQLITE_URL
-    return url
+    env = os.environ.get("DATABASE_URL")
+    if env:
+        print("Using DATABASE_URL from environment")
+        return env
+
+    # define candidates explicitly
+    pooler_url = "postgresql://postgres:06Kingbeast%232328@pqeiqbqqrmzrkgeqrlkv.aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres"
+    direct_url = "postgresql://postgres:06Kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres?sslmode=require"
+
+    from sqlalchemy import create_engine, text
+
+    for candidate in (pooler_url, direct_url):
+        if candidate.startswith("sqlite"):
+            return candidate
+        try:
+            engine = create_engine(candidate, connect_args={"connect_timeout": 5})
+            with engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            print(f"Connecting with URL: {candidate}")
+            return candidate
+        except Exception as e:
+            print(f"Failed to connect using {candidate}: {e}")
+            continue
+
+    print("Both Supabase endpoints unreachable. Falling back to local SQLite.")
+    return SQLITE_URL
 
 app.config["SQLALCHEMY_DATABASE_URI"] = _choose_database_url()
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -312,6 +330,22 @@ def health_tips():
         time_greeting=time_greeting,
         time_period=time_period
     )
+
+@app.route("/db-info")
+def db_info():
+    """Debug route: report which database URL is active and attempt a test query."""
+    from sqlalchemy import text
+    info = {
+        'configured_url': app.config.get('SQLALCHEMY_DATABASE_URI'),
+        'engine_url': str(db.engine.url) if hasattr(db, 'engine') else None,
+        'python_exec': sys.executable,
+    }
+    try:
+        with db.engine.connect() as conn:
+            info['test_query'] = conn.execute(text('SELECT 1')).scalar()
+    except Exception as e:
+        info['test_error'] = str(e)
+    return jsonify(info)
 
 @app.route("/logout")
 def logout():
