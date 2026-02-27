@@ -77,3 +77,10 @@ class EmotionLog(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     emotion = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class Admin(db.Model):
+    __tablename__ = 'admins'  # Ensure this matches Supabase exactly (plural vs singular)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)

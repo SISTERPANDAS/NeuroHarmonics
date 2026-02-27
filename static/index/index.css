@@ -731,3 +731,76 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
 }
+
+/* =========================
+   Admin Standalone Layout
+========================= */
+
+/* 1. Force a single column layout and center it */
+.admin-portal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* 2. Wrapper to ensure perfect centering */
+.admin-center-wrapper {
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* 3. The Glassmorphic Card */
+.admin-portal .glassmorphism {
+    background: rgba(20, 12, 47, 0.4); /* Translucent base */
+    backdrop-filter: blur(12px) saturate(180%); /* The "Glass" effect */
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(168, 85, 247, 0.4); /* Purple glow border */
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+
+
+/* 4. Admin-specific Typography */
+.admin-portal h2 {
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #fff, #c4b5fd);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 30px;
+}
+
+.admin-portal input {
+    background: rgba(15, 11, 31, 0.7) !important;
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    margin-bottom: 15px;
+}
+
+.back-to-user {
+    display: block;
+    margin-top: 20px;
+    color: #a78bfa;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.3s;
+}
+
+.back-to-user:hover {
+    color: #fff;
+    text-shadow: 0 0 8px #7c3aed;
+}
+
+/* 5. Clean up: Hide any split-container elements if they exist */
+.admin-portal .right-section, 
+.admin-portal .left-section {
+    display: none !important;
+}
