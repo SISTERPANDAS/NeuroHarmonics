@@ -167,30 +167,33 @@ def launch_game():
     
     if game == "space_invaders":
         try:
-            # Verify package exists first - with detailed error reporting
+            import subprocess, sys, shutil
+            # Prefer the venv-installed console script if available
+            project_root = os.path.dirname(__file__)
+            venv_script = os.path.join(project_root, "backend", "venv", "Scripts", "space-invaders.exe")
+            candidate = None
+            if os.path.exists(venv_script):
+                candidate = venv_script
+            else:
+                # Fallback to any console-script on PATH
+                which_path = shutil.which("space-invaders")
+                if which_path:
+                    candidate = which_path
+
+            if not candidate:
+                return jsonify({"success": False, "error": "Space Invaders executable not found. Install with: pip install space-invaders-pygame and ensure the console script is available."}), 400
+
+            # On Windows create a new console so the pygame window appears separately.
+            CREATE_NEW_CONSOLE = 0x00000010
             try:
-                import space_invaders
-            except Exception as e:
-                import traceback
-                error_detail = f"{type(e).__name__}: {str(e)}"
-                return jsonify({"success": False, "error": f"space-invaders-pygame load error: {error_detail}. Install with: pip install space-invaders-pygame"}), 400
-            
-            # Launch game asynchronously using threading to avoid blocking Flask
-            import threading
-            def run_game():
-                try:
-                    import space_invaders
-                    space_invaders.run()
-                except Exception:
-                    pass  # Silently fail if game crashes
-            
-            # Start game in daemon thread so it doesn't block
-            thread = threading.Thread(target=run_game, daemon=True)
-            thread.start()
-            
+                subprocess.Popen([candidate], creationflags=CREATE_NEW_CONSOLE)
+            except TypeError:
+                # Some environments may not accept creationflags; try without it.
+                subprocess.Popen([candidate])
+
             return jsonify({"success": True, "message": "Space Invaders is launching! A new window should appear shortly."})
         except Exception as e:
-            return jsonify({"success": False, "error": f"Error: {str(e)}"}), 500
+            return jsonify({"success": False, "error": f"Error launching game: {str(e)}"}), 500
     else:
         return jsonify({"success": False, "error": "Unknown game"}), 400
 
