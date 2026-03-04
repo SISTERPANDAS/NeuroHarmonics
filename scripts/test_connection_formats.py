@@ -3,17 +3,34 @@
 import sys
 from sqlalchemy import create_engine, text
 
-# Try different connection string formats
+# Try different connection string formats; allow env override for convenience
+import os
+
+default_password = "06Kingbeast%232328"  # URL-encoded password ("#" → "%23")
+
 connection_strings = [
     {
-        "name": "Pooler with base64-like username",
-        "url": "postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:06Kingbeast%232328@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require"
+        "name": "Neon (pooler) - ap-southeast-1",
+        "url": "postgresql://neondb_owner:npg_oOATQs5K7iFc@ep-falling-cherry-a172ybng-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=disable"
     },
     {
-        "name": "Direct connection (non-pooler)",
-        "url": "postgresql://postgres:06Kingbeast%232328@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres?sslmode=require"
+        "name": "Pooler (port 6543) with encoded username",
+        "url": f"postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:{default_password}@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require"
+    },
+    {
+        "name": "Pooler (port 5432) with encoded username",
+        "url": f"postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:{default_password}@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require"
+    },
+    {
+        "name": "Direct connection (port 5432 non-pooler)",
+        "url": f"postgresql://postgres:{default_password}@db.pqeiqbqqrmzrkgeqrlkv.supabase.co:5432/postgres?sslmode=require"
     },
 ]
+
+# if DATABASE_URL is defined in environment, try it first
+env_url = os.environ.get("DATABASE_URL")
+if env_url:
+    connection_strings.insert(0, {"name": "From DATABASE_URL environment", "url": env_url})
 
 print("=" * 80)
 print("TESTING SUPABASE CONNECTION FORMATS")

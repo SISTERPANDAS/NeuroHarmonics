@@ -23,4 +23,12 @@ This project integrates a Flask backend (API, authentication) with a React dashb
 
 ---
 
+## Optional Node/Express API
+
+A parallel Node.js/Express backend has been scaffolded under `node-backend/` for
+clients using React (Vite) and MongoDB Atlas. It connects to the same
+`neuroharmonics` database and uses Mongoose with schemas targeting the
+existing collections (`users`, `admin`, `community_message`, `contact_message`,
+`rfeedback`). See `node-backend/README.md` for setup instructions.
+
 Replace this file with project-specific details as you customize further.

@@ -1,12 +1,11 @@
 Flask
-flask-sqlalchemy
-psycopg2-binary
+pymongo
+pymongo[srv]
 gunicorn
 numpy
 pandas
 scikit-learn
 joblib
-supabase
 requests
 # ML microservice (run separately: uvicorn ml_service.ml_service:app --port 8000)
 fastapi

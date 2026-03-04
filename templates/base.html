@@ -11,6 +11,16 @@
     <script src="{{ url_for('static', filename='js/three-bg.js') }}" defer></script>
 </head>
 <body>
+    <!-- Persistent header with background music control -->
+    <div id="nh-header" style="position:fixed;top:8px;right:12px;z-index:9999;background:#fff;border-radius:12px;padding:8px;border:1px solid #ddd;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:flex;align-items:center;gap:8px;font-family:sans-serif;">
+      <button id="nh-music-toggle" aria-label="Toggle background music" style="background:none;border:none;cursor:pointer;font-size:16px;padding:4px 8px;" title="Play/Pause">🔊</button>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <span style="font-size:12px;color:#666;">Vol:</span>
+        <input id="nh-volume-slider" type="range" min="0" max="100" value="50" style="width:80px;cursor:pointer;" aria-label="Background music volume" title="Volume">
+      </div>
+    </div>
+
     {% block body %}{% endblock %}
+    <script src="{{ url_for('static', filename='music_player.js') }}"></script>
 </body>
 </html>

@@ -16,7 +16,15 @@
     🧠 <span>NeuroHarmonics</span>
   </div>
   <div class="nav-actions">
-    <a href="{{ url_for('health_tips') }}" class="nav-link">Health Tips</a>
+    <!-- show connection status -->
+    {% if db_connected is defined %}
+      <span class="db-status">DB: {{ 'online' if db_connected else 'offline' }}</span>
+    {% endif %}
+    <!-- using a literal path avoids url_for errors during reload/debug -->
+    <a href="/health-tips" class="nav-link">Health Tips</a>
+    {% if session.user_id %}
+      <a href="/dashboard" class="nav-link">Dashboard</a>
+    {% endif %}
     <button class="get-started" onclick="showLogin()">Get Started</button>
   </div>
 

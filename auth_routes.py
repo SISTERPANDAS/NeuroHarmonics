@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, session
-from models import db, User
+from models import User
 from werkzeug.security import check_password_hash, generate_password_hash
 import re
 
@@ -31,19 +31,23 @@ def login():
         password = data.get("password")
         if not email or not password:
             return jsonify({"success": False, "error": "Email and password required"}), 400
-        user = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password, password):
+        
+        user = User.find_by_email(email)
+        if not user or not check_password_hash(user["password"], password):
             return jsonify({"success": False, "error": "Invalid email or password"}), 401
-        username = user.username if user.username else (user.email.split('@')[0] if user.email else "User")
-        session["user_id"] = user.id
+        
+        username = user.get("username") if user.get("username") else (email.split('@')[0] if email else "User")
+        session["user_id"] = str(user["_id"])
         session["username"] = username
-        session["role"] = user.role
-        user.status = "active"
+        session["role"] = user.get("role", "user")
+        session.permanent = True
+        
+        # Update user status to active
         try:
-            db.session.commit()
+            User.update_status(str(user["_id"]), "active")
         except Exception:
-            db.session.rollback()
-            return jsonify({"success": False, "error": "Database error"}), 500
+            pass  # Ignore status update errors
+        
         return jsonify({"success": True, "username": username})
     except Exception as e:
         import traceback
@@ -76,25 +80,27 @@ def register():
             return jsonify({"success": False, "error": "Name must contain only letters and spaces"}), 400
 
         # Prevent duplicate emails
-        if User.query.filter_by(email=email).first():
+        if User.find_by_email(email):
             return jsonify({"success": False, "error": "Email already registered"}), 400
 
         hashed = generate_password_hash(password)
-        user = User(username=fullName.strip(), email=email.strip(), password=hashed)
-        db.session.add(user)
-        try:
-            db.session.commit()
-        except Exception as e:
-            db.session.rollback()
-            return jsonify({"success": False, "error": "Database error"}), 500
+        user_id = User.create(
+            username=fullName.strip(),
+            email=email.strip(),
+            password=hashed,
+            role="user",
+            status="active"
+        )
 
         # Auto-login after registration
-        session["user_id"] = user.id
-        session["username"] = user.username
-        session["role"] = user.role
+        session["user_id"] = user_id
+        session["username"] = fullName.strip()
+        session["role"] = "user"
+        session.permanent = True
 
-        return jsonify({"success": True, "username": user.username})
+        return jsonify({"success": True, "username": fullName.strip()})
     except Exception:
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": "Server error"}), 500
+

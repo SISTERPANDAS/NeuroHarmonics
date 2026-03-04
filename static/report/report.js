@@ -21,6 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function logout() {
-  localStorage.removeItem("loggedIn");
-  window.location.href = "../../templates/index/index.html";
+  fetch('/logout', { method: 'GET' })
+    .finally(() => {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "/";
+    });
 }

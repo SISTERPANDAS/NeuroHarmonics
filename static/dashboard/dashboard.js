@@ -160,9 +160,13 @@ async function analyzeData() {
 
 
 function logout() {
-  localStorage.removeItem("loggedIn");
-  window.location.href = "/";
-}
+  // hit server to clear session, then navigate home
+  fetch('/logout', { method: 'GET' })
+    .finally(() => {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "/";
+    });
+} // end logout
 
 
 function handleEEGFile() {

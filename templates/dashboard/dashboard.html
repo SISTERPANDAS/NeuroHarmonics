@@ -20,22 +20,22 @@
         </div>
 
         <nav class="nav-menu">
-            <button class="nav-item active" onclick="showSection('dashboard')">
+            <button class="nav-item active" onclick="showSection('dashboard', this)">
                 <i class="fas fa-chart-line"></i> Dashboard
             </button>
-            <button class="nav-item" onclick="showSection('live-analysis')">
+            <button class="nav-item" onclick="showSection('live-analysis', this)">
                 <i class="fas fa-brain"></i> Live Analysis
             </button>
-            <button class="nav-item" onclick="showSection('community')">
+            <button class="nav-item" onclick="showSection('community', this)">
                 <i class="fas fa-comment-alt"></i> Community
             </button>
-            <button class="nav-item" onclick="showSection('support')">
+            <button class="nav-item" onclick="showSection('support', this)">
                 <i class="fas fa-headset"></i> Support & Feedback
             </button>
-            <button class="nav-item" onclick="showSection('recommendations')">
+            <button class="nav-item" onclick="showSection('recommendations', this)">
                 <i class="fas fa-star"></i> Recommendations
             </button>
-            <button class="nav-item" onclick="showSection('references')">
+            <button class="nav-item" onclick="showSection('references', this)">
                 <i class="fas fa-gamepad"></i> Games & References
             </button>
         </nav>
@@ -385,7 +385,7 @@
     <h1>Community Chat</h1>
     <div class="chat-container glass">
         <div class="chat-messages" id="chat-box">
-            {% for msg in community_messages %}
+            {% for msg in community_message %}
                 <div class="message">
                     <span class="msg-user"><strong>{{ msg.username }}:</strong></span>
                     <span class="msg-content">{{ msg.content }}</span>

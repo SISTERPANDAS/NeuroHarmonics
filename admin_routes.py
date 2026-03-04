@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, session, redirect, render_template
-from models import db, User, Recommendation, SystemLog
+from models import User, Recommendation, SystemLog, get_users_collection
+from werkzeug.security import check_password_hash
 
 admin = Blueprint("admin", __name__)
 
@@ -27,17 +28,14 @@ def admin_login():
         if not username or not password:
             return jsonify({"success": False, "message": "Username and password required"}), 400
 
-        # Here we treat admin records as regular users with role='admin'.
-        # Password is stored hashed using the same mechanism as normal users.
-        from werkzeug.security import check_password_hash
-
-        admin_user = User.query.filter_by(username=username, role="admin").first()
-        if not admin_user or not check_password_hash(admin_user.password, password):
+        # Find admin user in MongoDB
+        admin_user = get_users_collection().find_one({"username": username, "role": "admin"})
+        if not admin_user or not check_password_hash(admin_user.get("password", ""), password):
             return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
 
-        session["user_id"] = admin_user.id
-        session["username"] = admin_user.username
-        session["role"] = admin_user.role
+        session["user_id"] = str(admin_user["_id"])
+        session["username"] = admin_user.get("username", username)
+        session["role"] = "admin"
 
         return jsonify({"success": True, "redirect": "/admin"})
     except Exception:
@@ -49,40 +47,51 @@ def admin_login():
 @admin.route("/admin/stats")
 def admin_stats():
     return jsonify({
-        "users": User.query.count(),
-        "uploads": SystemLog.query.filter_by(level="UPLOAD").count(),
-        "alerts": SystemLog.query.filter_by(level="ALERT").count()
+        "users": User.count(),
+        "uploads": SystemLog.count_by_level("UPLOAD"),
+        "alerts": SystemLog.count_by_level("ALERT")
     })
 
 # 👥 Users
 @admin.route("/admin/users")
 def get_users():
-    users = User.query.all()
-    return jsonify([
-        {"id": u.id, "name": u.name, "role": u.role, "status": u.status}
-        for u in users
-    ])
+    try:
+        users = User.get_all()
+        return jsonify([
+            {"id": str(u["_id"]), "name": u.get("username", ""), "role": u.get("role", "user"), "status": u.get("status", "active")}
+            for u in users
+        ])
+    except Exception as e:
+        print(f"Error getting users: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # 🧠 Recommendations
 @admin.route("/admin/recommendations", methods=["POST"])
 def add_recommendation():
-    data = request.json
-    rec = Recommendation(
-        emotion=data["emotion"],
-        content=data["content"]
-    )
-    db.session.add(rec)
-    db.session.commit()
-    return jsonify({"success": True})
+    try:
+        data = request.json
+        rec_id = Recommendation.create(
+            emotion=data.get("emotion", ""),
+            content=data.get("content", "")
+        )
+        return jsonify({"success": True, "id": rec_id})
+    except Exception as e:
+        print(f"Error adding recommendation: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # 📜 Logs
 @admin.route("/admin/logs")
 def get_logs():
-    logs = SystemLog.query.order_by(SystemLog.timestamp.desc()).limit(50)
-    return jsonify([
-        {
-            "message": l.message,
-            "level": l.level,
-            "time": l.timestamp.strftime("%Y-%m-%d %H:%M")
-        } for l in logs
-    ])
+    try:
+        logs = SystemLog.get_recent(limit=50)
+        return jsonify([
+            {
+                "message": l.get("message", ""),
+                "level": l.get("level", "INFO"),
+                "time": l.get("timestamp", "").isoformat() if hasattr(l.get("timestamp", ""), "isoformat") else str(l.get("timestamp", ""))
+            } for l in logs
+        ])
+    except Exception as e:
+        print(f"Error getting logs: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+

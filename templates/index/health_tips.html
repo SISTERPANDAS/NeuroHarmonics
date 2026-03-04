@@ -29,46 +29,66 @@
     <h1 class="hero-title">Mental Wellness <span>Tips</span></h1>
     <p class="subtitle">Science-backed strategies to optimize your brain health.</p>
 
-    <!-- Music Recommendations Section -->
-    <div class="music-section">
-      <h2 class="section-title">{{ time_greeting }}! 🎵</h2>
-      <p class="section-subtitle">We've picked some perfect music for you based on the time of day</p>
-      <div class="video-gallery-grid">
-        {% for music in music_recommendations %}
-           {% set music_url = url_for('static', filename=music.music_path) %}
-           {% set thumb_url = url_for('static', filename=music.thumbnail) %}
-           <div class="video-card" onclick="playMusicCard('{{ music_url }}')">
-          <div class="video-thumb-container">
-                <img class="video-thumb" src="{{ thumb_url }}" alt="{{ music.title }} thumbnail">
-            <button class="play-btn">
-              <i class="fas fa-play"></i>
-            </button>
-          </div>
-          <div class="video-title">{{ music.title }}</div>
-          <div class="video-quote">"{{ music.quote }}"</div>
+    {# three time-of-day frames #}
+    {% for period in periods %}
+      <div class="period-frame">
+        <h2 class="section-title">{{ period.label }}</h2>
+        <p class="section-subtitle">Music recommendations</p>
+        <div class="video-gallery-grid">
+          {% for music in period.music_recommendations %}
+            {% set music_url = url_for('static', filename=music.music_path) %}
+            <div class="video-card" onclick="playMusicCard('{{ music_url }}')">
+              <div class="video-thumb-container">
+                {% if music.thumbnail %}
+                  <img class="video-thumb" src="{{ url_for('static', filename=music.thumbnail) }}" alt="Music thumbnail">
+                {% endif %}
+                <button class="play-btn">
+                  <i class="fas fa-play"></i>
+                </button>
+              </div>
+              <div class="motivational-line" data-card-type="music"></div>
+            </div>
+          {% endfor %}
         </div>
-        {% endfor %}
+      </div>
+    {% endfor %}
+    <audio id="recommendationAudio" class="hidden"></audio>
+
+    <!-- Floating Music Player UI -->
+    <div id="musicPlayerWidget" style="display:none;position:fixed;bottom:20px;left:20px;z-index:1000;background:#fff;border-radius:12px;padding:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);min-width:280px;font-family:sans-serif;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <button id="playerPlayPause" style="background:#ddd;border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;" title="Play/Pause">▶</button>
+        <div style="flex:1;">
+          <div id="playerTitle" style="font-weight:600;font-size:13px;color:#333;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">Playing Music</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+            <progress id="playerProgress" style="flex:1;height:3px;" value="0" max="100"></progress>
+            <span id="playerTime" style="font-size:11px;color:#888;min-width:30px;">0:00</span>
+          </div>
+        </div>
+        <button id="playerClose" style="background:none;border:none;cursor:pointer;font-size:14px;color:#999;" title="Close">✕</button>
       </div>
     </div>
 
-    <!-- Hidden audio element for playing music -->
-    <audio id="recommendationAudio"></audio>
-
-    <div class="video-gallery-grid">
-      {% for v in videos %}
-      <div class="video-card">
-        <div class="video-thumb-container">
-              <img class="video-thumb" src="{{ url_for('static', filename='dashboard/video_thumbs/' ~ v.thumb) }}" alt="{{ v.title }} thumbnail">
-                {% set video_url = url_for('static', filename=v.video_path) %}
-                <button class="play-btn" onclick="playVideo('{{ video_url }}', '{{ v.title }}')">
-            <i class="fas fa-play"></i>
-          </button>
-        </div>
-        <div class="video-title">{{ v.title }}</div>
-        <div class="video-quote">"{{ v.quote }}"</div>
-        <div class="video-tip">{{ v.tip }}</div>
+    <!-- Animation videos -->
+    <div class="video-section">
+      <h2 class="section-title">Animation Videos</h2>
+      <div class="video-gallery-grid">
+        {% for v in videos %}
+          <div class="video-card">
+            <div class="video-thumb-container">
+              {% if v.thumb %}
+                <img class="video-thumb" src="{{ url_for('static', filename=v.thumb) }}" alt="{{ v.title }} thumbnail">
+              {% endif %}
+              {% set video_url = url_for('static', filename=v.video_path) %}
+              <button class="play-btn" onclick="playVideo('{{ video_url }}', '{{ v.title }}')">
+                <i class="fas fa-play"></i>
+              </button>
+            </div>
+            <div class="video-title">{{ v.title }}</div>
+            <div class="video-quote">"{{ v.quote }}"</div>
+            <div class="video-tip">{{ v.tip }}</div>            <div class="motivational-line" data-card-type="video"></div>          </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
 
     <!-- Modal for video playback -->
@@ -95,6 +115,7 @@
             </div>
             <div class="video-title">{{ yoga.title }}</div>
             <div class="video-tip">{{ yoga.description }}</div>
+            <div class="motivational-line" data-card-type="yoga"></div>
           </div>
         {% endfor %}
       </div>
@@ -132,17 +153,133 @@
     <!-- Three.js canvas for visual effect -->
     <div id="threejs-bg"></div>
   </main>
-  <script src="{{ url_for('static', filename='music_player.js') }}"></script>
   <script>
+    // expose selected period key to client scripts (server computed)
+    window.currentPeriod = "{{ periods[0].key if periods|length > 0 else '' }}";
+  </script>
+  <script>
+    // Motivational two-liners for cards
+    (function(){
+      const phrases = {
+        music: [
+          "Breathe in calm, breathe out the noise.",
+          "A gentle track, a stronger mind — press play.",
+          "Let the rhythm steady your heartbeat, one beat at a time.",
+          "Small pauses, big clarity — tune in."
+        ],
+        video: [
+          "A moment of stillness can change your day.",
+          "Watch, reflect, and let a lighter thought grow.",
+          "Visual breaths for a busy mind.",
+          "A short clip, a long-lasting calm."
+        ],
+        yoga: [
+          "One pose, one breath — reset your balance.",
+          "Stretch gently, show kindness to your body.",
+          "Move slowly; peace follows movement.",
+          "Anchor your mind through gentle motion."
+        ]
+      };
+      function pick(type) {
+        const arr = phrases[type] || [];
+        if (!arr.length) return '';
+        return arr[Math.floor(Math.random()*arr.length)];
+      }
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.motivational-line').forEach((el) => {
+          const t = el.dataset.cardType || 'music';
+          el.textContent = pick(t);
+          el.style.fontStyle = 'italic';
+          el.style.marginTop = '6px';
+          el.style.color = '#444';
+        });
+      });
+    })();
+  </script>
+
+  <script src="{{ url_for('static', filename='music_player.js') }}"></script>
+  <!-- Music player is loaded from base.html and health_tips.html defines the card/widget interactions -->
+  <script>
+    // Extract filename without extension for display
+    function getAudioFilename(src) {
+      const segments = src.split('/');
+      const file = segments[segments.length - 1] || 'Music';
+      return file.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
     function playMusicCard(src) {
       var audio = document.getElementById('recommendationAudio');
-      if(window.musicPlayer && window.musicPlayer.pause) window.musicPlayer.pause();
+      // Pause background music while other audio plays
+      if(window.musicPlayer && window.musicPlayer.pauseForOtherMusic) window.musicPlayer.pauseForOtherMusic();
       audio.src = src;
       audio.play();
+      
+      // Show/update the floating music player widget
+      const widget = document.getElementById('musicPlayerWidget');
+      if (widget) {
+        const title = document.getElementById('playerTitle');
+        if (title) title.textContent = getAudioFilename(src);
+        widget.style.display = 'block';
+      }
+      
+      // Resume background music when this audio ends
       audio.onended = function() {
-        if(window.musicPlayer && window.musicPlayer.play) window.musicPlayer.play();
+        if(window.musicPlayer && window.musicPlayer.resumeAfterOtherMusic) window.musicPlayer.resumeAfterOtherMusic();
+        // Hide the widget when music ends
+        const widget = document.getElementById('musicPlayerWidget');
+        if (widget) widget.style.display = 'none';
       };
     }
+
+    // Wire up music player widget controls
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('recommendationAudio');
+      const widget = document.getElementById('musicPlayerWidget');
+      const playBtn = document.getElementById('playerPlayPause');
+      const closeBtn = document.getElementById('playerClose');
+      const progress = document.getElementById('playerProgress');
+      const timeDisplay = document.getElementById('playerTime');
+
+      if (playBtn && audio) {
+        playBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (audio.paused) {
+            audio.play();
+            playBtn.textContent = '⏸';
+          } else {
+            audio.pause();
+            playBtn.textContent = '▶';
+          }
+        });
+      }
+
+      if (closeBtn && widget) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          audio.pause();
+          widget.style.display = 'none';
+        });
+      }
+
+      if (audio && progress && timeDisplay) {
+        audio.addEventListener('timeupdate', () => {
+          const percent = (audio.currentTime / audio.duration) * 100 || 0;
+          progress.value = percent;
+          const mins = Math.floor(audio.currentTime / 60);
+          const secs = Math.floor(audio.currentTime % 60);
+          timeDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+          playBtn.textContent = audio.paused ? '▶' : '⏸';
+        });
+
+        audio.addEventListener('play', () => {
+          if (playBtn) playBtn.textContent = '⏸';
+        });
+
+        audio.addEventListener('pause', () => {
+          if (playBtn) playBtn.textContent = '▶';
+        });
+      }
+    });
   </script>
 </body>
 </html>
@@ -204,28 +341,6 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
-  </script>
-  
-  <script>
-    // Music card player logic
-    function playMusicCard(musicSrc) {
-      // Pause background music
-      if (window.musicPlayer && window.musicPlayer.pauseForOtherMusic) {
-        window.musicPlayer.pauseForOtherMusic();
-      }
-      
-      // Play the selected music
-      const audio = document.getElementById('recommendationAudio');
-      audio.src = musicSrc;
-      audio.play();
-    }
-    
-    function resumeBackgroundMusic() {
-      // Resume background music when recommendation music ends
-      if (window.musicPlayer && window.musicPlayer.resumeAfterOtherMusic) {
-        window.musicPlayer.resumeAfterOtherMusic();
-      }
-    }
   </script>
   
   <script src="{{ url_for('static', filename='index/tips.js') }}"></script>

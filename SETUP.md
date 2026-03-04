@@ -6,11 +6,11 @@ The NeuroHarmonics app is **running successfully** at `http://127.0.0.1:5000`
 
 ### Database Configuration
 
-**Current Setup:** SQLite (Local) + Supabase Fallback
-- **Local Database:** `instance/neuroharmonics.db` (SQLite)
-- **Remote Database:** Supabase PostgreSQL (configured but requires verification)
+**Current Setup:** Supabase PostgreSQL (required on startup)
+- **Local Database:** `instance/neuroharmonics.db` (SQLite) – only used for manual debugging
+- **Remote Database:** Supabase PostgreSQL (credentials must be valid)
 
-The app intelligently falls back to local SQLite when Supabase is unreachable, ensuring team development works offline while supporting cloud sync.
+The application now performs a connection check during startup. If Supabase cannot be reached (bad credentials, network/firewall blocking port 6543, etc.) the process exits immediately rather than silently falling back to SQLite.  This prevents confusion and ensures you are always working against the cloud database.
 
 ---
 
@@ -73,9 +73,9 @@ When Supabase credentials are verified and network is accessible:
 - Host: `aws-1-ap-northeast-2.pooler.supabase.com`
 
 ### 2. Connection String
-The app is configured to use:
+The app is configured to use (pooler port 6543 is preferred):
 ```
-postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:PASSWORD@aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres?sslmode=require
+postgresql://postgres.pqeiqbqqrmzrkgeqrlkv:PASSWORD@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require
 ```
 
 ### 3. Troubleshooting
