@@ -81,7 +81,50 @@ def home():
         print(f"DB connection check failed: {e}")
         db_ok = False
 
-    return render_template("index/index.html", db_connected=db_ok)
+    # Fetch all feedbacks from database
+    feedbacks_data = []
+    if db_ok:
+        try:
+            from models import get_feedback_collection, get_users_collection
+            feedback_col = get_feedback_collection()
+            users_col = get_users_collection()
+            
+            # Get all feedbacks, no limit
+            all_feedbacks = list(feedback_col.find().sort("created_at", -1))
+            
+            for fb in all_feedbacks:
+                user_id = fb.get("user_id")  # Use user_id field from existing feedbacks
+                if user_id:
+                    # Find user by _id
+                    user = users_col.find_one({"_id": user_id})
+                    if user:
+                        username = user.get("username", "Anonymous")
+                        avatar = user.get("avatar", "")
+                        
+                        # Generate random avatar if not available
+                        if not avatar:
+                            import random
+                            colors = ["FF6B6B", "4ECDC4", "45B7D1", "FFA07A", "98D8C8", "F38181", "AA96DA", "FCBAD3"]
+                            random_color = random.choice(colors)
+                            avatar = f"https://ui-avatars.com/api/?name={username}&background={random_color}&color=fff&size=100"
+                        
+                        feedbacks_data.append({
+                            "feedback": fb,
+                            "username": username,
+                            "avatar": avatar
+                        })
+        except Exception as e:
+            print(f"Error fetching feedbacks: {e}")
+            # Fallback to demo feedbacks if database error
+            feedbacks_data = [
+                {
+                    "feedback": {"rating": 5, "comment": "Amazing platform for mental wellness!"},
+                    "username": "Demo User",
+                    "avatar": "https://ui-avatars.com/api/?name=Demo+User&background=FF6B6B&color=fff&size=100"
+                }
+            ]
+
+    return render_template("index/index.html", db_connected=db_ok, feedbacks=feedbacks_data)
 
 
 @app.route("/login", methods=["GET"])
@@ -346,6 +389,56 @@ def post_community():
         })
     except Exception as e:
         print(f"Error posting community message: {e}")
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+
+@app.route("/submit-feedback", methods=["POST"])
+def submit_feedback():
+    """Submit user feedback with rating and optional comment"""
+    if "user_id" not in session:
+        return jsonify({"success": False, "error": "Not logged in"}), 401
+    
+    data = request.get_json() or {}
+    rating = data.get("rating")
+    comment = data.get("comment", "").strip()
+    
+    if not rating or not isinstance(rating, int) or rating < 1 or rating > 5:
+        return jsonify({"success": False, "error": "Invalid rating"}), 400
+    
+    try:
+        from models import Feedback
+        user_id = session["user_id"]
+        feedback_id = Feedback.create(user_id=user_id, rating=rating, comment=comment)
+        
+        return jsonify({
+            "success": True,
+            "id": feedback_id,
+            "message": "Feedback submitted successfully"
+        })
+    except Exception as e:
+        print(f"Error submitting feedback: {e}")
+        return jsonify({"success": False, "error": "Database error"}), 500
+
+
+@app.route("/send-message", methods=["POST"])
+def send_message():
+    """Receive support contact messages and store in database"""
+    data = request.get_json() if request.is_json else request.form.to_dict()
+    # extract fields (name/email optional)
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    subject = data.get("subject", "").strip()
+    message = data.get("message", "").strip()
+
+    if not subject or not message:
+        return jsonify({"success": False, "error": "Subject and message required"}), 400
+
+    try:
+        from models import ContactMessage
+        msg_id = ContactMessage.create(name=name, email=email, subject=subject, message=message)
+        return jsonify({"success": True, "id": msg_id})
+    except Exception as e:
+        print(f"Error saving support message: {e}")
         return jsonify({"success": False, "error": "Database error"}), 500
 
 

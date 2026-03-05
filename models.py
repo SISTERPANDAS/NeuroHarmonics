@@ -5,7 +5,7 @@ from pymongo import MongoClient
 import os
 
 # MongoDB Connection
-MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://neuroadmin:strongpassword123@cluster0.phmuefa.mongodb.net/?appName=Cluster0")
+MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://neuroadmin:Strongpassword123@cluster0.phmuefa.mongodb.net/?appName=Cluster0")
 
 try:
     client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
@@ -153,7 +153,7 @@ class Feedback:
     def create(user_id, rating, comment=None):
         """Create new feedback"""
         feedback_data = {
-            "user_id": ObjectId(user_id) if isinstance(user_id, str) else user_id,
+            "_id": ObjectId(user_id) if isinstance(user_id, str) else user_id,
             "rating": rating,
             "comment": comment,
             "created_at": datetime.utcnow()

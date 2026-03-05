@@ -89,13 +89,16 @@
   
   <div class="testimonial-wrapper">
     <div class="testimonial-slider" id="testimonialSlider">
-      {% for fb, uname in feedbacks %}
+      {% for item in feedbacks %}
       <div class="testimonial-card">
-        <div class="rating">
-          {% for _ in range(fb.rating) %}⭐{% endfor %}
+        <div class="user-avatar">
+          <img src="{{ item.avatar }}" alt="{{ item.username }}" onerror="this.src='https://ui-avatars.com/api/?name={{ item.username }}&background=FF6B6B&color=fff&size=100'">
         </div>
-        <p class="feedback-text">"{{ fb.comment }}"</p>
-        <h4 class="user-name">- {{ uname }}</h4>
+        <div class="rating">
+          {% for _ in range(item.feedback.rating) %}⭐{% endfor %}
+        </div>
+        <p class="feedback-text">"{{ item.feedback.comment }}"</p>
+        <h4 class="user-name">- {{ item.username }}</h4>
       </div>
       {% endfor %}
     </div>

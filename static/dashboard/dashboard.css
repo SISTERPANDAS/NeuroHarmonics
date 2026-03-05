@@ -568,6 +568,62 @@ body.modal-open {
     transform: scale(1.02);
 }
 
+/* support-grid layout */
+.support-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+/* additional glowing effect wrapper */
+.glow-card {
+    position: relative;
+}
+
+.glow-card::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, #ff6b6b, #a855f7, #5a189a);
+    z-index: -1;
+    filter: blur(20px);
+    opacity: 0.7;
+    border-radius: 22px;
+    transition: opacity 0.3s;
+}
+
+.glow-card:hover::after {
+    opacity: 1;
+}
+
+/* inputs inside forms */
+.support-grid input[type="text"],
+.support-grid input[type="email"],
+.support-grid textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    transition: all 0.3s;
+}
+
+.support-grid input:focus,
+.support-grid textarea:focus {
+    outline: none;
+    border-color: #a855f7;
+    box-shadow: 0 0 8px rgba(168,85,247,0.6);
+}
+
+.support-grid label {
+    display: block;
+    margin-bottom: 4px;
+    color: #ddd;
+}
+
 /* Sign Out Button */
 .sign-out-btn {
     display: flex;
