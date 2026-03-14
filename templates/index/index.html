@@ -22,9 +22,7 @@
     {% endif %}
     <!-- using a literal path avoids url_for errors during reload/debug -->
     <a href="/health-tips" class="nav-link">Health Tips</a>
-    {% if session.user_id %}
-      <a href="/dashboard" class="nav-link">Dashboard</a>
-    {% endif %}
+    <!-- Keep landing page clean by not exposing dashboard link here. -->
     <button class="get-started" onclick="showLogin()">Get Started</button>
   </div>
 

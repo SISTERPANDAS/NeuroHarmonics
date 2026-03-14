@@ -18,10 +18,30 @@
         <div id="three-performance-container" class="three-box"></div>
     </section>
 
+    <section id="management">
+        <h1>Admin Control Center</h1>
+        <div class="control-boxes">
+            <div class="control-card">
+                <h4>System Alerts</h4>
+                <p>Live status monitoring with quick resolution tools.</p>
+                <button onclick="clearAllAlerts()">Clear alerts</button>
+            </div>
+            <div class="control-card">
+                <h4>Feature Toggle</h4>
+                <p>Enable/disable recommendation and scan engine modules.</p>
+                <button onclick="toggleFeature('recommendations')">Toggle Wellness Tips</button>
+            </div>
+            <div class="control-card">
+                <h4>Announcements</h4>
+                <p>Send a broadcast message to active users instantly.</p>
+                <button onclick="announceToUsers()">Send Announcement</button>
+            </div>
+        </div>
+    </section>
+
     <section id="users">
         <h1>User Management</h1>
         <div class="table-container">
-            <table>
                 <thead>
                     <tr><th>ID</th><th>Username</th><th>Status</th><th>Actions</th></tr>
                 </thead>

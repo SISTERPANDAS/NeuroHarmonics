@@ -54,7 +54,18 @@
   text-align: center;
   letter-spacing: 0.5px;
 }
-.importance-cards-grid {
+.diseases-neglect-section {
+  margin: 60px auto;
+  max-width: 1200px;
+}
+.diseases-neglect-section .section-title {
+  color: #a855f7;
+  font-size: 1.5rem;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.disease-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 32px;
@@ -80,6 +91,13 @@
   font-size: 1.18rem;
   margin-bottom: 12px;
 }
+.importance-quote {
+  color: #f1e8ff;
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 8px;
+  letter-spacing: 0.25px;
+}
 .importance-card ul {
   list-style: disc;
   color: #e0e0e0;
@@ -89,6 +107,46 @@
 .importance-card li {
   font-size: 1rem;
   margin-bottom: 6px;
+}
+.importance-card-fullwidth {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(50,50,70,0.22) 100%);
+  border: 2px solid #a855f7;
+  padding: 22px;
+}
+.disease-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+.disease-card {
+  background: linear-gradient(135deg, rgba(138, 43, 226, 0.16), rgba(30, 30, 45, 0.26));
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+}
+.disease-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+  border-color: #f472b6;
+}
+.disease-card img {
+  width: 100%;
+  height: 138px;
+  object-fit: cover;
+}
+.disease-card h4 {
+  color: #ffe5ff;
+  font-size: 1.1rem;
+  margin: 12px 14px 6px;
+}
+.disease-card p {
+  color: #dcdde4;
+  font-size: 0.95rem;
+  margin: 0 14px 14px;
+  line-height: 1.45;
 }
 .video-quote {
   font-size: 1.01rem;

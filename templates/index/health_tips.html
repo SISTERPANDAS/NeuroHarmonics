@@ -128,27 +128,59 @@
         <div class="importance-card">
           <h3>Better Relationships</h3>
           <p>Emotional health helps you connect, empathize, and communicate effectively.</p>
+          <p class="importance-quote">"When you care for your mind, your connections naturally flourish."</p>
+          <p class="importance-quote">"A calm heart speaks the loudest truths in every relationship."</p>
         </div>
         <div class="importance-card">
           <h3>Resilience</h3>
           <p>It enables you to bounce back from setbacks and manage stress.</p>
+          <p class="importance-quote">"Strength is built in the quiet moments when you choose to keep moving."</p>
+          <p class="importance-quote">"The bravest thing is showing up every day with hope."</p>
         </div>
         <div class="importance-card">
           <h3>Physical Well-being</h3>
           <p>Good emotional health reduces risk of chronic diseases and boosts immunity.</p>
-        </div>
-        <div class="importance-card">
-          <h3>Diseases from Neglect</h3>
-          <ul>
-            <li>Depression</li>
-            <li>Anxiety Disorders</li>
-            <li>Heart Disease</li>
-            <li>Sleep Disorders</li>
-            <li>Digestive Problems</li>
-          </ul>
+          <p class="importance-quote">"A peaceful mind is the foundation of a strong, healthy body."</p>
+          <p class="importance-quote">"Take care of your thoughts and your body will follow."</p>
         </div>
       </div>
     </div>
+
+    <!-- Diseases from Neglect Section -->
+    <div class="diseases-neglect-section">
+      <h2 class="section-title">Diseases from Neglect</h2>
+      <div class="disease-cards-grid">
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='disease/depression.jpeg') }}" alt="Depression">
+          <h4>Depression</h4>
+          <p>Persistent sadness, loss of interest, and energy drop can follow emotional neglect.</p>
+        </div>
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='disease/anxiety_disorder.jpeg') }}" alt="Anxiety Disorders">
+          <h4>Anxiety Disorders</h4>
+          <p>Worry spikes, panic attacks, and nervous tension are common with unresolved stress.</p>
+        </div>
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='disease/heart_disease.jpeg') }}" alt="Heart Disease">
+          <h4>Heart Disease</h4>
+          <p>Chronic stress and neglect boost blood pressure and risk of cardiac events.</p>
+        </div>
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='disease/Sleep-Disorder.jpeg') }}" alt="Sleep Disorders">
+          <h4>Sleep Disorders</h4>
+          <p>Insomnia and irregular sleep become persistent when emotional needs are ignored.</p>
+        </div>
+        <div class="disease-card">
+          <img src="{{ url_for('static', filename='disease/digestive_problem.jpeg') }}" alt="Digestive Problems">
+          <h4>Digestive Problems</h4>
+          <p>IBS, acid reflux and stomach discomfort may develop under long-term emotional neglect.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Three.js canvas for visual effect -->
+    <div id="threejs-bg"></div>
+  </main>
 
     <!-- Three.js canvas for visual effect -->
     <div id="threejs-bg"></div>

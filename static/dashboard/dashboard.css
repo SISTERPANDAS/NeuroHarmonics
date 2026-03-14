@@ -576,6 +576,120 @@ body.modal-open {
     margin-top: 20px;
 }
 
+/* Live feedback area in feedback/support tab */
+.feedback-live-section {
+    margin-top: 30px;
+    background: rgba(34, 41, 92, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.feedback-live-section h3 {
+    margin-top: 0;
+    color: #ffffff;
+}
+
+.feedback-list {
+    max-height: 260px;
+    overflow-y: auto;
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.feedback-item {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.18);
+    padding: 12px;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+    color: #e2e8f0;
+    margin-bottom: 6px;
+}
+
+.feedback-rating {
+    color: #ffd700;
+}
+
+.feedback-comment {
+    color: #cbd5e1;
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+/* Star Rating System */
+.star-rating {
+    display: inline-flex;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.star {
+    font-size: 2rem;
+    color: #4a4a6a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.star:hover,
+.star.active {
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+    transform: scale(1.1);
+}
+
+.rating-text {
+    display: block;
+    margin-top: 8px;
+    color: #c0c0e0;
+    font-size: 0.95rem;
+    font-style: italic;
+}
+
+.rating-group label {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+/* solid card style for feedback/support panel */
+.solid-card {
+    border-radius: 15px;
+    background-color: #232323;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.45);
+    padding: 24px;
+    color: #f3f4f6;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.solid-card h3 {
+    color: #ffffff;
+    margin-bottom: 0.8rem;
+}
+
+.solid-card p { color: #cbd5e1; margin-bottom: 1rem; }
+
+.solid-card textarea,
+.solid-card input[type="text"],
+.solid-card input[type="email"] {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.solid-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
 /* additional glowing effect wrapper */
 .glow-card {
     position: relative;

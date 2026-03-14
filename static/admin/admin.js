@@ -21,20 +21,35 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 // (Insert the Three.js animate logic here to visualize server load)
 
 async function loginAsAdmin() {
-    const username = prompt("Enter Admin Username:");
+    const email = prompt("Enter Admin Email:");
     const password = prompt("Enter Admin Password:");
 
     const response = await fetch('/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ email, password })
     });
 
     const result = await response.json();
     if (result.success) {
         window.location.href = result.redirect;
     } else {
-        alert("Access Denied: Admin not found.");
+        alert("Access Denied: Admin not found or invalid credentials.");
+    }
+}
+
+function clearAllAlerts() {
+    alert('All system alerts cleared (demo).');
+}
+
+function toggleFeature(feature) {
+    alert(`Feature toggle request received: ${feature} (demo).`);
+}
+
+function announceToUsers() {
+    const message = prompt('Enter announcement text to send to active users:');
+    if (message) {
+        alert('Announcement sent (demo): ' + message);
     }
 }
 

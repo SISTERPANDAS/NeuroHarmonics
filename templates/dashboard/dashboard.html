@@ -362,12 +362,21 @@
             <!-- two-column layout: feedback on left, contact on right -->
             <div class="support-grid">
                 <!-- Feedback card -->
-                <div class="glass-card feedback-form glow-card">
+                <div class="solid-card feedback-form">
                     <h3><i class="fas fa-star"></i> Rate Your Experience</h3>
-                    <form onsubmit="submitFeedback(event)">
+                    <p>Feedback is stored in <code>feedback</code> collection.</p>
+                    <form id="feedback-form" onsubmit="return false;">
                         <div class="rating-group">
-                            <label>Rating (1‑5):</label>
-                            <input type="number" name="rating" min="1" max="5" required>
+                            <label>Rating:</label>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+                            <input type="hidden" name="rating" id="rating-value" value="0">
+                            <span class="rating-text" id="rating-text">Click to rate</span>
                         </div>
                         <textarea name="comment" placeholder="Tell us what you think about the app..." required></textarea>
                         <button type="submit" class="submit-btn">Send Feedback</button>
@@ -375,15 +384,36 @@
                 </div>
 
                 <!-- Support card -->
-                <div class="glass-card contact-form glow-card">
+                <div class="solid-card contact-form">
                     <h3><i class="fas fa-envelope"></i> Contact Support</h3>
-                    <form onsubmit="sendSupportMessage(event)">
-                        <input type="text" name="name" placeholder="Your Name" required>
-                        <input type="email" name="email" placeholder="Your Email" required>
-                        <input type="text" name="subject" placeholder="Subject" required>
-                        <textarea name="message" placeholder="Describe your issue or question..." required></textarea>
+                    <p>Queries are stored in <code>contact_messages</code> collection and used by support team.</p>
+                    <form id="support-form" onsubmit="return false;">
+                        <input type="text" name="name" id="support-name" placeholder="Your Name" required>
+                        <input type="email" name="email" id="support-email" placeholder="Your Email" required>
+                        <input type="text" name="subject" id="support-subject" placeholder="Subject" required>
+                        <textarea name="message" id="support-message" placeholder="Describe your issue or question..." required></textarea>
                         <button type="submit" class="submit-btn">Send Message</button>
                     </form>
+                </div>
+            </div>
+
+            <!-- Live feedback list section (same support tab) -->
+            <div class="feedback-live-section">
+                <h3>Recent Feedback</h3>
+                <div class="feedback-list">
+                    {% if feedbacks %}
+                        {% for fb in feedbacks %}
+                            <div class="feedback-item">
+                                <div class="feedback-header">
+                                    <strong>{{ fb.username or 'Anonymous' }}</strong>
+                                    <span class="feedback-rating">{% for i in range(fb.rating) %}⭐{% endfor %}</span>
+                                </div>
+                                <p class="feedback-comment">{{ fb.comment }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="feedback-item"><em>No feedback submitted yet.</em></div>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -430,61 +460,20 @@
         </section>
 
     </main>
+
     <!-- Settings Modal -->
     <div id="settings-modal" class="settings-modal" style="display:none;">
       <div class="settings-modal-content glass-card">
         <span class="close-btn" onclick="closeSettingsModal()">&times;</span>
         <h2>Edit Profile</h2>
 
-        <!-- Single, clean form: textbox + submit button -->
-        <form id="profile-form" enctype="multipart/form-data" onsubmit="saveProfile(event)">
-          <div class="profile-edit-section">
-            <label for="profile-photo">Profile Photo</label>
-
-            <div class="photo-drop-area" id="photo-drop-area">
-              <img
-                id="preview-photo"
-                src="{% if user.avatar %}{{ url_for('static', filename=user.avatar) }}{% else %}https://api.dicebear.com/7.x/identicon/svg?seed={{ user.username or 'user' }}{% endif %}"
-                class="profile-pic"
-                style="width:80px;height:80px;"
-              />
-
-              <input
-                type="file"
-                id="profile-photo"
-                name="profile-photo"
-                accept="image/*"
-                style="display:none;"
-              />
-
-              <button
-                type="button"
-                class="upload-btn"
-                onclick="document.getElementById('profile-photo').click()"
-              >
-                Browse
-              </button>
-
-              <span class="drag-text">or drag & drop</span>
-            </div>
-          </div>
-
+        <form id="profile-form" onsubmit="saveProfile(event)">
           <div class="profile-edit-section">
             <label for="username">Name</label>
-
-            <input
-              type="text"
-              id="username"
-              name="username"
-              value="{{ user.username or 'Guest User' }}"
-              class="edit-name-input"
-              required
-            />
+            <input type="text" id="username" name="username" value="{{ user.username or '' }}" required />
           </div>
 
-          <button type="submit" class="submit-btn">
-            Save Changes
-          </button>
+          <button type="submit" class="submit-btn">Save</button>
         </form>
       </div>
     </div>

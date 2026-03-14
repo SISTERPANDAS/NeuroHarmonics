@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, session, redirect, render_template
 from models import User, Recommendation, SystemLog, get_users_collection
 from werkzeug.security import check_password_hash
+import re
 
 admin = Blueprint("admin", __name__)
 
@@ -17,24 +18,33 @@ def admin_login_page():
 def admin_login():
     """
     Admin-only login.
-    Expects JSON: { "username": "...", "password": "..." }
+    Expects JSON: { "email": "...", "password": "..." }
     Validates against users with role='admin'.
     """
     try:
         data = request.get_json() or {}
-        username = data.get("username")
+        identity = (data.get("email") or data.get("username") or "").strip()
         password = data.get("password")
 
-        if not username or not password:
-            return jsonify({"success": False, "message": "Username and password required"}), 400
+        if not identity or not password:
+            return jsonify({"success": False, "message": "Email and password required"}), 400
 
-        # Find admin user in MongoDB
-        admin_user = get_users_collection().find_one({"username": username, "role": "admin"})
+        # Attempt to find admin by email or username, case-insensitive fallback
+        admin_user = get_users_collection().find_one({
+            "role": "admin",
+            "$or": [
+                {"email": identity},
+                {"username": identity},
+                {"email": {"$regex": f"^{re.escape(identity)}$", "$options": "i"}},
+                {"username": {"$regex": f"^{re.escape(identity)}$", "$options": "i"}}
+            ]
+        })
+
         if not admin_user or not check_password_hash(admin_user.get("password", ""), password):
             return jsonify({"success": False, "message": "Invalid admin credentials"}), 401
 
         session["user_id"] = str(admin_user["_id"])
-        session["username"] = admin_user.get("username", username)
+        session["username"] = admin_user.get("username", identity)
         session["role"] = "admin"
 
         return jsonify({"success": True, "redirect": "/admin"})

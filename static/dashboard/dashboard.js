@@ -25,96 +25,6 @@ function toggleSidebar() {
     sidebar.classList.toggle('open');
 }
 
-function openSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return;
-    modal.style.display = 'flex';
-    document.body.classList.add('modal-open');
-}
-
-function closeSettingsModal() {
-    const modal = document.getElementById('settings-modal');
-    if (!modal) return;
-    modal.style.display = 'none';
-    document.body.classList.remove('modal-open');
-}
-
-function saveProfile(event) {
-    if (event) event.preventDefault();
-    const form = document.getElementById('profile-form');
-    if (!form) return;
-    const formData = new FormData(form);
-
-    fetch('/update-profile', {
-        method: 'POST',
-        body: formData
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                closeSettingsModal();
-                window.location.reload();
-            } else {
-                alert(data.error || 'Failed to update profile.');
-            }
-        })
-        .catch(() => alert('Server error.'));
-}
-
-function initProfileModal() {
-    const form = document.getElementById('profile-form');
-    const photoInput = document.getElementById('profile-photo');
-    const uploadBtn = document.querySelector('.upload-btn');
-    const dropArea = document.getElementById('photo-drop-area');
-
-    if (form) {
-        form.addEventListener('submit', saveProfile);
-    }
-
-    if (uploadBtn && photoInput) {
-        uploadBtn.addEventListener('click', () => photoInput.click());
-    }
-
-    if (photoInput) {
-        photoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (ev) {
-                const img = document.getElementById('preview-photo');
-                if (img) img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-
-    if (dropArea && photoInput) {
-        dropArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropArea.classList.add('drag-over');
-        });
-        dropArea.addEventListener('dragleave', () => {
-            dropArea.classList.remove('drag-over');
-        });
-        dropArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropArea.classList.remove('drag-over');
-            const file = e.dataTransfer.files[0];
-            if (!file) return;
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            photoInput.files = dataTransfer.files;
-            const reader = new FileReader();
-            reader.onload = function (ev) {
-                const img = document.getElementById('preview-photo');
-                if (img) img.src = ev.target.result;
-            };
-            reader.readAsDataURL(file);
-        });
-    }
-}
-
-document.addEventListener('DOMContentLoaded', initProfileModal);
 
 
 
@@ -166,7 +76,48 @@ function logout() {
       localStorage.removeItem("loggedIn");
       window.location.href = "/";
     });
-} // end logout
+}
+
+function openSettingsModal() {
+  const modal = document.getElementById('settings-modal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.body.classList.add('modal-open');
+}
+
+function closeSettingsModal() {
+  const modal = document.getElementById('settings-modal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.classList.remove('modal-open');
+}
+
+function saveProfile(event) {
+  event.preventDefault();
+  const form = document.getElementById('profile-form');
+  if (!form) return;
+
+  const formData = new FormData(form);
+
+  fetch('/update-profile', {
+    method: 'POST',
+    body: formData
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        alert('Profile updated successfully');
+        closeSettingsModal();
+        window.location.reload();
+      } else {
+        alert(data.error || 'Failed to update profile');
+      }
+    })
+    .catch(err => {
+      console.error('Profile update error', err);
+      alert('Server error while updating profile.');
+    });
+}
 
 
 function handleEEGFile() {
@@ -192,13 +143,87 @@ function handleEEGFile() {
   fileNameEl.innerText = "Selected: " + file.name;
 }
 
+// --- Star Rating System ---
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating-value');
+    const ratingText = document.getElementById('rating-text');
+    
+    if (stars.length > 0) {
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                ratingInput.value = value;
+                updateStars(value);
+                ratingText.textContent = getRatingText(value);
+            });
+            
+            star.addEventListener('mouseover', function() {
+                const value = parseInt(this.getAttribute('data-value'));
+                highlightStars(value);
+            });
+            
+            star.addEventListener('mouseout', function() {
+                const currentValue = parseInt(ratingInput.value) || 0;
+                updateStars(currentValue);
+            });
+        });
+    }
+
+    const feedbackForm = document.getElementById('feedback-form');
+    const supportForm = document.getElementById('support-form');
+
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', submitFeedback);
+    }
+
+    if (supportForm) {
+        supportForm.addEventListener('submit', sendSupportMessage);
+    }
+});
+
+function updateStars(value) {
+    const stars = document.querySelectorAll('.star');
+    stars.forEach((star, index) => {
+        if (index < value) {
+            star.classList.add('active');
+        } else {
+            star.classList.remove('active');
+        }
+    });
+}
+
+function highlightStars(value) {
+    const stars = document.querySelectorAll('.star');
+    stars.forEach((star, index) => {
+        if (index < value) {
+            star.style.color = '#ffd700';
+        } else {
+            star.style.color = '';
+        }
+    });
+}
+
+function getRatingText(value) {
+    const texts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+    return texts[value] || 'Click to rate';
+}
+
 // --- NEW: Handle Feedback Submission ---
 async function submitFeedback(event) {
     event.preventDefault(); // Stop the page from refreshing
     
     const form = event.target;
-    const formData = new FormData(form);
+    const ratingInput = document.getElementById('rating-value');
+    const rating = parseInt(ratingInput.value);
+    const comment = form.querySelector('textarea[name="comment"]').value;
     const submitBtn = form.querySelector('.submit-btn');
+
+    // Validate rating
+    if (!rating || rating < 1 || rating > 5) {
+        alert('Please select a star rating (1-5 stars)');
+        return;
+    }
 
     submitBtn.innerText = "Sending...";
     submitBtn.disabled = true;
@@ -206,14 +231,25 @@ async function submitFeedback(event) {
     try {
         const response = await fetch("/submit-feedback", {
             method: "POST",
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                rating: rating,
+                comment: comment
+            })
         });
 
-        if (response.ok) {
-            alert("Thank you for your feedback!");
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Thank you for your feedback! " + "⭐".repeat(rating));
             form.reset(); // Clear the form
+            // Reset stars
+            updateStars(0);
+            document.getElementById('rating-text').textContent = 'Click to rate';
         } else {
-            alert("Failed to send feedback. Please try again.");
+            alert(data.error || "Failed to send feedback. Please try again.");
         }
     } catch (error) {
         console.error("Error:", error);
@@ -229,7 +265,12 @@ async function sendSupportMessage(event) {
     event.preventDefault();
     
     const form = event.target;
-    const formData = new FormData(form);
+    const formData = {
+        name: form.querySelector('input[name="name"]').value,
+        email: form.querySelector('input[name="email"]').value,
+        subject: form.querySelector('input[name="subject"]').value,
+        message: form.querySelector('textarea[name="message"]').value
+    };
     const submitBtn = form.querySelector('.submit-btn');
 
     submitBtn.innerText = "Sending Message...";
@@ -238,18 +279,23 @@ async function sendSupportMessage(event) {
     try {
         const response = await fetch("/send-message", {
             method: "POST",
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
         });
 
-        if (response.ok) {
-            alert("Message sent! Our team will get back to you soon.");
+        const data = await response.json();
+
+        if (data.success) {
+            alert("Message sent! Our team will get back to you at " + formData.email + " soon.");
             form.reset();
         } else {
-            alert("Failed to send message.");
+            alert("Failed to send message: " + (data.error || "Unknown error"));
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("Connection error.");
+        alert("Connection error. Please try again.");
     } finally {
         submitBtn.innerText = "Send Message";
         submitBtn.disabled = false;

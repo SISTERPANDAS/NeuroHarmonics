@@ -1,14 +1,28 @@
 """MongoDB Database Models for NeuroHarmonics"""
 from datetime import datetime
-from bson import ObjectId
 from pymongo import MongoClient
 import os
+import dns.resolver
+
+# Configure DNS resolver to use Google DNS (8.8.8.8) to prevent timeouts
+# with MongoDB Atlas SRV records on some networks.
+try:
+    dns.resolver.default_resolver = dns.resolver.Resolver(configure=False)
+    dns.resolver.default_resolver.nameservers = ['8.8.8.8']
+except Exception as e:
+    print(f"Warning: Could not configure DNS resolver: {e}")
+
+# Try to import ObjectId from pymongo (works with pymongo 4.x)
+try:
+    from bson import ObjectId
+except ImportError:
+    from bson.objectid import ObjectId
 
 # MongoDB Connection
 MONGO_URI = os.environ.get("MONGO_URI", "mongodb+srv://neuroadmin:Strongpassword123@cluster0.phmuefa.mongodb.net/?appName=Cluster0")
 
 try:
-    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=5000)
+    client = MongoClient(MONGO_URI, serverSelectionTimeoutMS=20000)
     # Test connection
     client.admin.command('ping')
     print("[+] MongoDB connection successful")
@@ -153,7 +167,7 @@ class Feedback:
     def create(user_id, rating, comment=None):
         """Create new feedback"""
         feedback_data = {
-            "_id": ObjectId(user_id) if isinstance(user_id, str) else user_id,
+            "user_id": ObjectId(user_id) if isinstance(user_id, str) else user_id,
             "rating": rating,
             "comment": comment,
             "created_at": datetime.utcnow()

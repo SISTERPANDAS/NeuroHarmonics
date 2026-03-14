@@ -1,13 +1,11 @@
 from flask import Flask, render_template, redirect, session, request, jsonify
 import os
 from datetime import datetime, timedelta
-from werkzeug.utils import secure_filename
 from models import User, CommunityMessage, SystemLog
 from auth_routes import auth
 from admin_routes import admin
 import random
-
-app = Flask(__name__)
+app = Flask(__name__, template_folder="templates")
 app.secret_key = os.environ.get("FLASK_SECRET", "super-secret-key")
 app.permanent_session_lifetime = timedelta(days=30)
 
@@ -28,38 +26,21 @@ def update_profile():
             return jsonify({'success': False, 'error': 'User not found'}), 404
 
         fullName = request.form.get('fullName') or request.form.get('username')
-        photo = request.files.get('photo')
 
+        from models import get_users_collection
         if fullName:
-            # Update username in MongoDB
-            from models import get_users_collection
+            username_clean = fullName.strip()
             get_users_collection().update_one(
-                {"_id": user_id},
-                {"$set": {"username": fullName.strip()}}
+                {'_id': user_id},
+                {'$set': {'username': username_clean}}
             )
+            user = User.find_by_id(user_id)
+            session['username'] = user.get('username')
+            return jsonify({'success': True, 'username': user.get('username')})
 
-        if photo and photo.filename:
-            filename = secure_filename(photo.filename)
-            ext = os.path.splitext(filename)[1].lower() or ".png"
-            static_root = os.path.join(app.root_path, 'static')
-            avatar_dir = os.path.join(static_root, 'uploads', 'avatars')
-            os.makedirs(avatar_dir, exist_ok=True)
-            stored_name = f"user_{user['_id']}_{int(datetime.utcnow().timestamp())}{ext}"
-            avatar_fs_path = os.path.join(avatar_dir, stored_name)
-            photo.save(avatar_fs_path)
-            avatar_rel_path = os.path.join('uploads', 'avatars', stored_name)
-            
-            # Update avatar in MongoDB
-            from models import get_users_collection
-            get_users_collection().update_one(
-                {"_id": user_id},
-                {"$set": {"avatar": avatar_rel_path}}
-            )
-            session['avatar'] = avatar_rel_path
-
-        return jsonify({'success': True, 'username': fullName, 'avatar': user.get('avatar', '')})
+        return jsonify({'success': False, 'error': 'No username provided'})
     except Exception as e:
-        print("Update profile error:", e)
+        print('Update profile error:', e)
         import traceback
         traceback.print_exc()
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -67,10 +48,9 @@ def update_profile():
 
 @app.route("/")
 def home():
-    # if user already logged in, skip the landing page
-    if "user_id" in session:
-        return redirect("/dashboard")
-
+    # Always show landing page (do not redirect logged-in users to dashboard)
+    # This ensures the URL lands on the home page as requested.
+    
     # check database connectivity for display
     db_ok = False
     try:
@@ -278,7 +258,7 @@ def health_tips():
 @app.route("/dashboard")
 def dashboard():
     if "user_id" not in session:
-        return redirect("/login")
+        return redirect("/")
     
     from bson import ObjectId
     user_id = ObjectId(session["user_id"]) if isinstance(session["user_id"], str) else session["user_id"]
@@ -325,8 +305,39 @@ def dashboard():
         except Exception:
             m["timestamp"] = datetime.utcnow()
 
-    # Pass messages under the variable name expected by the template
-    return render_template("dashboard/dashboard.html", user=user, community_message=all_msgs)
+    # Also load feedback list so dashboard can display it live
+    from models import get_feedback_collection, get_users_collection
+    feedbacks_data = []
+    try:
+        feedback_col = get_feedback_collection()
+        users_col = get_users_collection()
+        all_feedbacks = list(feedback_col.find().sort("created_at", -1))
+        for fb in all_feedbacks:
+            user_info = None
+            if fb.get("user_id"):
+                try:
+                    user_info = users_col.find_one({"_id": fb.get("user_id")})
+                except Exception:
+                    user_info = None
+
+            username = (user_info.get("username") if user_info else (fb.get("username") or "Anonymous"))
+            feedbacks_data.append({
+                "rating": fb.get("rating", 0),
+                "comment": fb.get("comment", ""),
+                "created_at": fb.get("created_at"),
+                "username": username
+            })
+    except Exception as e:
+        print(f"Error loading feedback list: {e}")
+        feedbacks_data = []
+
+    # Pass messages and feedback list under variable names expected by template
+    return render_template(
+        "dashboard/dashboard.html",
+        user=user,
+        community_message=all_msgs,
+        feedbacks=feedbacks_data
+    )
 
 
 @app.route("/admin")
@@ -435,11 +446,170 @@ def send_message():
 
     try:
         from models import ContactMessage
-        msg_id = ContactMessage.create(name=name, email=email, subject=subject, message=message)
+        user_id = session.get('user_id')
+        msg_id = ContactMessage.create(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+            user_id=user_id
+        )
+
+        # Only persist message; do not attempt email sending
         return jsonify({"success": True, "id": msg_id})
     except Exception as e:
         print(f"Error saving support message: {e}")
         return jsonify({"success": False, "error": "Database error"}), 500
+
+
+def send_confirmation_email(to_email, name, subject, user_message):
+    """Send a confirmation email to the user who submitted the support message"""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    
+    # Email configuration - using safe defaults (requires environment vars to actually send)
+    SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+    SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
+    SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+    FROM_EMAIL = os.environ.get("FROM_EMAIL", "mnop73359@gmail.com")
+    
+    # If no SMTP credentials configured, skip email send (non-critical)
+    if not SMTP_USERNAME or not SMTP_PASSWORD:
+        print("Email not configured - skipping send")
+        return False
+    
+    try:
+        # Create message
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"NeuroHarmonics: We received your message - {subject}"
+        msg["From"] = FROM_EMAIL
+        msg["To"] = to_email
+        
+        # Plain text version
+        text_content = f"""Dear {name},
+
+Thank you for contacting NeuroHarmonics Support!
+
+We have received your message:
+Subject: {subject}
+Message: {user_message}
+
+Our team will review your message and get back to you within 24-48 hours.
+
+Best regards,
+NeuroHarmonics Support Team
+"""
+        
+        # HTML version
+        html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+        .header {{ background: linear-gradient(135deg, #9d4edd, #5a189a); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }}
+        .content {{ background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }}
+        .message-box {{ background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #9d4edd; }}
+        .footer {{ text-align: center; margin-top: 20px; color: #666; font-size: 12px; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 NeuroHarmonics</h1>
+            <p>Support Team</p>
+        </div>
+        <div class="content">
+            <p>Dear <strong>{name}</strong>,</p>
+            <p>Thank you for contacting NeuroHarmonics Support!</p>
+            <div class="message-box">
+                <p><strong>Subject:</strong> {subject}</p>
+                <p><strong>Your Message:</strong></p>
+                <p>{user_message}</p>
+            </div>
+            <p>Our team will review your message and get back to you within <strong>24-48 hours</strong>.</p>
+            <p>Best regards,<br><strong>NeuroHarmonics Support Team</strong></p>
+        </div>
+        <div class="footer">
+            <p>This is an automated response. Please do not reply to this email.</p>
+            <p>© 2024 NeuroHarmonics. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>"""
+        
+        # Attach both versions
+        part1 = MIMEText(text_content, "plain")
+        part2 = MIMEText(html_content, "html")
+        msg.attach(part1)
+        msg.attach(part2)
+        
+        # Send email
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(FROM_EMAIL, to_email, msg.as_string())
+        server.quit()
+        
+        print(f"Confirmation email sent to {to_email}")
+        return True
+        
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        raise
+
+
+def send_support_notification_email(user_name, user_email, subject, user_message):
+    """Send notification email to support admin address(es)"""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+
+    SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
+    SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+    SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
+    SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
+    FROM_EMAIL = os.environ.get("FROM_EMAIL", "mnop73359@gmail.com")
+    SUPPORT_EMAILS = os.environ.get("SUPPORT_EMAILS", "mnop73359@gmail.com")
+
+    if not SMTP_USERNAME or not SMTP_PASSWORD:
+        print("Email not configured - skipping support notification")
+        return False
+
+    recipient_list = [email.strip() for email in SUPPORT_EMAILS.split(",") if email.strip()]
+    if not recipient_list:
+        print("No support email recipients configured")
+        return False
+
+    try:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Support request received: {subject}"
+        msg["From"] = FROM_EMAIL
+        msg["To"] = ", ".join(recipient_list)
+
+        text_content = f"""New support request from NeuroHarmonics:\n\nName: {user_name}\nEmail: {user_email}\nSubject: {subject}\nMessage: {user_message}\n"""
+
+        html_content = f"""<!DOCTYPE html><html><body><h2>New Support Request</h2><p><strong>Name:</strong> {user_name}</p><p><strong>Email:</strong> {user_email}</p><p><strong>Subject:</strong> {subject}</p><p><strong>Message:</strong> {user_message}</p></body></html>"""
+
+        part1 = MIMEText(text_content, "plain")
+        part2 = MIMEText(html_content, "html")
+        msg.attach(part1)
+        msg.attach(part2)
+
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(SMTP_USERNAME, SMTP_PASSWORD)
+        server.sendmail(FROM_EMAIL, recipient_list, msg.as_string())
+        server.quit()
+
+        print(f"Support notification sent to: {recipient_list}")
+        return True
+
+    except Exception as exc:
+        print(f"Failed to send support notification: {exc}")
+        raise
 
 
 @app.route("/launch-game", methods=["POST"])
@@ -475,5 +645,31 @@ def launch_game():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Ensure the main admin user exists on startup
+    try:
+        from models import User, get_users_collection
+        from werkzeug.security import generate_password_hash
+        
+        # Configuration for the primary admin
+        target_email = "ariyankapanda01@gmail.com"
+        target_username = "admin2"
+        
+        admin_user = User.find_by_email(target_email)
+        if not admin_user:
+            print(f"--- Creating Default Admin ({target_username}) ---")
+            User.create(
+                username=target_username,
+                email=target_email,
+                password=generate_password_hash("admin456"),
+                role="admin",
+                status="active"
+            )
+        elif admin_user.get("role") != "admin":
+            print(f"--- Promoting {target_username} to Admin ---")
+            get_users_collection().update_one({"_id": admin_user["_id"]}, {"$set": {"role": "admin"}})
+            
+    except Exception as e:
+        print(f"Startup Admin Check Failed: {e}")
 
+    # Disable reloader on Windows to avoid WinError 10038 socket issues.
+    app.run(debug=True, use_reloader=False, port=5001)

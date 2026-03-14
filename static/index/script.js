@@ -46,9 +46,8 @@ function showRegister() {
       const data = await response.json();
       console.log("LOGIN RESPONSE:", data);
       if (data.success) {
-        // For now treat this as user login and go to user dashboard.
-        // If you later add role-based redirects, you can switch on data.role here.
-        window.location.href = "/dashboard";
+        // Redirect to role-based dashboard
+        window.location.href = data.redirect || "/dashboard";
       } else {
         alert(data.error);
       }
@@ -97,7 +96,7 @@ function showRegister() {
       const data = await res.json();
       console.log("REGISTER RESPONSE:", data);
       if (data.success) {
-        // User is logged in on the server; go straight to user dashboard.
+        // User is logged in on the server; go to dashboard directly.
         window.location.href = "/dashboard";
       } else {
         alert(data.error || "Registration failed");
@@ -166,14 +165,19 @@ function goToAdminLogin() {
 
 // Function to be used on the NEW admin login page (e.g., admin_login.html)
 async function submitAdminAuth() {
-    const userVal = document.getElementById('adminUsername').value;
+    const emailVal = document.getElementById('adminEmail').value;
     const passVal = document.getElementById('adminPassword').value;
+
+    if (!emailVal || !passVal) {
+        alert('Please enter admin email and password');
+        return;
+    }
 
     const response = await fetch('/admin-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            username: userVal,
+            email: emailVal,
             password: passVal
         })
     });

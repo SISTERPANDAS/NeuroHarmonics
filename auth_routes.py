@@ -32,14 +32,20 @@ def login():
         if not email or not password:
             return jsonify({"success": False, "error": "Email and password required"}), 400
         
+        # Try finding user by email first
         user = User.find_by_email(email)
+        # If not found, try by username
+        if not user:
+            user = User.find_by_username(email)
+            
         if not user or not check_password_hash(user["password"], password):
             return jsonify({"success": False, "error": "Invalid email or password"}), 401
         
         username = user.get("username") if user.get("username") else (email.split('@')[0] if email else "User")
         session["user_id"] = str(user["_id"])
         session["username"] = username
-        session["role"] = user.get("role", "user")
+        role = user.get("role", "user")
+        session["role"] = role
         session.permanent = True
         
         # Update user status to active
@@ -47,8 +53,9 @@ def login():
             User.update_status(str(user["_id"]), "active")
         except Exception:
             pass  # Ignore status update errors
-        
-        return jsonify({"success": True, "username": username})
+
+        redirect_url = "/admin" if role == "admin" else "/dashboard"
+        return jsonify({"success": True, "username": username, "redirect": redirect_url})
     except Exception as e:
         import traceback
         traceback.print_exc()
@@ -103,4 +110,3 @@ def register():
         import traceback
         traceback.print_exc()
         return jsonify({"success": False, "error": "Server error"}), 500
-

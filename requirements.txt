@@ -3,6 +3,7 @@ pymongo
 pymongo[srv]
 gunicorn
 numpy
+dnspython
 pandas
 scikit-learn
 joblib
